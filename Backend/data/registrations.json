@@ -30,5 +30,13 @@
     "collegeYear": "B.Tech 2nd year",
     "phone": "9876543265",
     "eventId": 1
+  },
+  {
+    "id": 1790748174803,
+    "name": "coder9",
+    "email": "coder44563@gmail.com",
+    "collegeYear": "B.Tech 2nd year",
+    "phone": "987654389",
+    "eventId": 1
   }
 ]

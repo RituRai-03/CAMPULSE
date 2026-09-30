@@ -795,3 +795,163 @@ body {
     min-width: 800px;
   }
 }
+
+/* ADMIN EVENT MANAGEMENT */
+
+.admin-event-management {
+  padding: 70px 0 20px;
+}
+
+.admin-section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 30px;
+  margin-bottom: 35px;
+}
+
+.admin-section-heading h2 {
+  font-size: 36px;
+  letter-spacing: -1.5px;
+}
+
+
+/* EVENT FORM */
+
+.event-form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+  padding: 35px;
+  margin-bottom: 45px;
+  border: 1px solid #ccc;
+}
+
+.event-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.event-form input,
+.event-form select,
+.event-form textarea {
+  width: 100%;
+  border: 1px solid #cfcfca;
+  background: transparent;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.event-form input,
+.event-form select {
+  height: 48px;
+}
+
+.event-form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.event-form input:focus,
+.event-form select:focus,
+.event-form textarea:focus {
+  outline: 2px solid #e4572e;
+  outline-offset: -2px;
+}
+
+.event-form-full {
+  grid-column: 1 / -1;
+}
+
+
+/* EVENT LIST */
+
+.admin-event-list {
+  border-top: 1px solid #171717;
+}
+
+.admin-event-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+  padding: 25px 0;
+  border-bottom: 1px solid #ccc;
+}
+
+.admin-event-row h3 {
+  font-size: 24px;
+  letter-spacing: -0.8px;
+  margin: 10px 0 5px;
+}
+
+.admin-event-row p {
+  color: #666;
+  font-size: 13px;
+}
+
+.admin-event-info {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+.admin-event-info > span {
+  color: #666;
+  font-size: 13px;
+}
+
+.admin-event-info strong {
+  font-size: 16px;
+  min-width: 55px;
+}
+
+.delete-btn {
+  border: 1px solid #171717;
+  background: transparent;
+  color: #171717;
+  padding: 9px 14px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.delete-btn:hover {
+  background: #171717;
+  color: white;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 700px) {
+
+  .admin-section-heading {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .event-form {
+    grid-template-columns: 1fr;
+    padding: 22px;
+  }
+
+  .event-form-full {
+    grid-column: auto;
+  }
+
+  .admin-event-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-event-info {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+}
