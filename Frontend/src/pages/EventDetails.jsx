@@ -274,12 +274,10 @@ function EventDetails() {
               Be part of it.
             </h2>
 
-            <p>
-              Registration closes on{" "}
-              <strong>
-                {event.registrationDeadline}
-              </strong>.
-            </p>
+        <p>
+  Secure your spot before the event reaches
+  its capacity.
+</p>
 
           </div>
 

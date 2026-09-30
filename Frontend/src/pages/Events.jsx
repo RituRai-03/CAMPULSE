@@ -5,6 +5,7 @@ function Events() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetch("http://localhost:5000/api/events")
@@ -19,7 +20,14 @@ function Events() {
         setEvents(data);
       })
       .catch((error) => {
-        console.error("Error fetching events:", error);
+        console.error(
+          "Error fetching events:",
+          error
+        );
+
+        setError(
+          "Unable to load events. Please make sure the CAMPULSE server is running."
+        );
       })
       .finally(() => {
         setLoading(false);
@@ -75,12 +83,16 @@ function Events() {
           type="text"
           placeholder="Search events..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) =>
+            setSearch(e.target.value)
+          }
         />
 
         <select
           value={category}
-          onChange={(e) => setCategory(e.target.value)}
+          onChange={(e) =>
+            setCategory(e.target.value)
+          }
         >
           <option value="All">
             All Categories
@@ -101,6 +113,7 @@ function Events() {
           <option value="Cultural">
             Cultural
           </option>
+
         </select>
 
       </section>
@@ -111,6 +124,8 @@ function Events() {
       ========================= */}
 
       <section className="events-grid">
+
+        {/* LOADING */}
 
         {loading ? (
 
@@ -126,7 +141,37 @@ function Events() {
 
           </div>
 
+        ) : error ? (
+
+          /* ERROR */
+
+          <div className="events-loading">
+
+            <p className="section-label">
+              CONNECTION ERROR
+            </p>
+
+            <h2>
+              {error}
+            </h2>
+
+            <button
+              className="primary-btn"
+              onClick={() => {
+                window.location.reload();
+              }}
+              style={{
+                marginTop: "25px"
+              }}
+            >
+              Try Again →
+            </button>
+
+          </div>
+
         ) : filteredEvents.length > 0 ? (
+
+          /* EVENTS */
 
           filteredEvents.map((event) => (
 
@@ -202,6 +247,8 @@ function Events() {
           ))
 
         ) : (
+
+          /* NO RESULTS */
 
           <div className="events-loading">
 

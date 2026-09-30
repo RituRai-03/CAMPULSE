@@ -10,36 +10,96 @@ body {
   color: #171717;
 }
 
+/* ==============================
+   NAVBAR
+   ============================== */
+
 .navbar {
-  height: 72px;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 0 7%;
-  border-bottom: 1px solid #dcdcd8;
-  background: #f5f5f2;
+  align-items: center;
+
+  padding: 20px 7%;
+
+  background: #f8f8f5;
+
+  margin-bottom: 15px;
 }
 
 .logo {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 800;
-  letter-spacing: -0.5px;
+  letter-spacing: -1px;
 }
 
 .nav-links {
   display: flex;
-  gap: 32px;
+  align-items: center;
+  gap: 28px;
 }
 
 .nav-links a {
   text-decoration: none;
-  color: #333;
+  color: #171717;
   font-size: 14px;
 }
 
 .nav-links a:hover {
   color: #e4572e;
 }
+
+.nav-user {
+  font-size: 13px;
+  color: #555;
+}
+
+.logout-btn {
+  border: none;
+  background: transparent;
+  color: #171717;
+
+  cursor: pointer;
+
+  font-family: inherit;
+  font-size: 13px;
+  padding: 0;
+}
+
+.logout-btn:hover {
+  color: #e4572e;
+}
+
+
+/* ==============================
+   MOBILE NAVBAR
+   ============================== */
+
+@media (max-width: 700px) {
+
+  .navbar {
+    padding: 18px 5%;
+    margin-bottom: 20px;
+
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .nav-links {
+    width: 100%;
+
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 18px;
+  }
+
+  .nav-user {
+    display: none;
+  }
+
+}
+
 
 .home {
   padding: 0 7%;
@@ -1212,13 +1272,14 @@ body {
   display: flex;
   flex-direction: column;
   border-top: 1px solid #ccc;
+  margin-top: 20px;
 }
 
 .my-registration-card {
   display: grid;
   grid-template-columns: 1fr 360px;
   gap: 60px;
-  padding: 35px 0;
+  padding: 45px 0;
   border-bottom: 1px solid #ccc;
 }
 
@@ -1442,4 +1503,113 @@ body {
 .primary-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* ==============================
+   MOBILE POLISH
+   ============================== */
+
+@media (max-width: 700px) {
+
+  .navbar {
+    padding: 18px 5%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .nav-links {
+    width: 100%;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+
+  .events-page,
+  .event-details-page,
+  .login-page {
+    padding-left: 5%;
+    padding-right: 5%;
+  }
+
+  .events-header h1,
+  .login-intro h1 {
+    font-size: 58px;
+    letter-spacing: -3px;
+  }
+
+  .event-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .events-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .event-card {
+    padding: 25px;
+  }
+
+  .event-hero {
+    grid-template-columns: 1fr;
+    gap: 35px;
+  }
+
+  .event-hero h1 {
+    font-size: 52px;
+    letter-spacing: -3px;
+  }
+
+  .event-date-large {
+    justify-self: start;
+  }
+
+  .event-meta {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+
+  .event-registration {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+
+  .registration-section {
+    grid-template-columns: 1fr;
+    gap: 35px;
+  }
+
+  .registration-form {
+    width: 100%;
+  }
+
+  .login-container {
+    grid-template-columns: 1fr;
+    gap: 45px;
+  }
+
+  .login-box {
+    padding: 28px;
+  }
+
+  .my-registration-card {
+    grid-template-columns: 1fr;
+  }
+
+}
+.events-loading h2 {
+  max-width: 700px;
+}
+
+.events-loading .primary-btn {
+  margin-top: 25px;
+}
+
+@media (max-width: 600px) {
+  .events-loading {
+    padding: 45px 0;
+  }
+
+  .events-loading h2 {
+    font-size: 28px;
+  }
 }
