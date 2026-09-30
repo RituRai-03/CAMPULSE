@@ -42,5 +42,16 @@
     "description": "Music, poetry, comedy and performances by students from across campus.",
     "registered": 57,
     "capacity": 57
+  },
+  {
+    "id": 1790762804243,
+    "name": "Hackathon-26",
+    "category": "Technical",
+    "date": "12 November 2026",
+    "time": "10:00 AM - 03:00 PM",
+    "venue": "Raman Block",
+    "description": "Internal Hackathon",
+    "registered": 1,
+    "capacity": 49
   }
 ]

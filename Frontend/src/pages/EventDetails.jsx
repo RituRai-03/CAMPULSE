@@ -14,12 +14,20 @@ function EventDetails() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  // Get logged-in user
+
+  // =========================
+  // GET LOGGED-IN USER
+  // =========================
+
   const user = JSON.parse(
     localStorage.getItem("campulseUser")
   );
 
-  // Registration form
+
+  // =========================
+  // REGISTRATION FORM
+  // =========================
+
   const [formData, setFormData] = useState({
     name: user?.name || "",
     email: user?.email || "",
@@ -35,7 +43,15 @@ function EventDetails() {
   useEffect(() => {
 
     fetch("http://localhost:5000/api/events")
-      .then((response) => response.json())
+      .then((response) => {
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch event");
+        }
+
+        return response.json();
+
+      })
       .then((data) => {
 
         const selectedEvent = data.find(
@@ -61,6 +77,22 @@ function EventDetails() {
 
 
   // =========================
+  // CLOSE FORM WHEN EVENT IS FULL
+  // =========================
+
+  useEffect(() => {
+
+    if (
+      event &&
+      event.registered >= event.capacity
+    ) {
+      setShowForm(false);
+    }
+
+  }, [event]);
+
+
+  // =========================
   // SUBMIT REGISTRATION
   // =========================
 
@@ -68,8 +100,26 @@ function EventDetails() {
 
     e.preventDefault();
 
+
+    // FINAL FRONTEND CAPACITY CHECK
+
+    if (
+      event.registered >= event.capacity
+    ) {
+
+      setError(
+        "This event is full. Registration is no longer available."
+      );
+
+      setShowForm(false);
+
+      return;
+    }
+
+
     setSubmitting(true);
     setError("");
+
 
     try {
 
@@ -89,16 +139,32 @@ function EventDetails() {
         }
       );
 
+
       const data = await response.json();
 
+
       if (!response.ok) {
+
         throw new Error(
           data.message ||
           "Registration failed"
         );
+
       }
 
+
+      // UPDATE LOCAL EVENT COUNT
+
+      setEvent((previousEvent) => ({
+        ...previousEvent,
+        registered:
+          previousEvent.registered + 1
+      }));
+
+
       setSubmitted(true);
+      setShowForm(false);
+
 
     } catch (error) {
 
@@ -114,6 +180,7 @@ function EventDetails() {
       setSubmitting(false);
 
     }
+
   };
 
 
@@ -124,6 +191,7 @@ function EventDetails() {
   if (loading) {
 
     return (
+
       <main className="event-details-page">
 
         <p>
@@ -131,6 +199,7 @@ function EventDetails() {
         </p>
 
       </main>
+
     );
 
   }
@@ -143,6 +212,7 @@ function EventDetails() {
   if (!event) {
 
     return (
+
       <main className="event-details-page">
 
         <h2>
@@ -150,9 +220,18 @@ function EventDetails() {
         </h2>
 
       </main>
+
     );
 
   }
+
+
+  // =========================
+  // EVENT FULL
+  // =========================
+
+  const isFull =
+    event.registered >= event.capacity;
 
 
   return (
@@ -248,7 +327,9 @@ function EventDetails() {
           </strong>
 
           <p>
-            students registered
+            {isFull
+              ? "event is full"
+              : "students registered"}
           </p>
 
         </div>
@@ -271,167 +352,215 @@ function EventDetails() {
             </p>
 
             <h2>
-              Be part of it.
+              {isFull
+                ? "This event is full."
+                : "Be part of it."}
             </h2>
 
-        <p>
-  Secure your spot before the event reaches
-  its capacity.
-</p>
+            <p>
+              {isFull
+                ? "All available seats have been reserved."
+                : "Secure your spot before the event reaches its capacity."}
+            </p>
 
           </div>
 
 
-   <button
-  className="primary-btn"
-  onClick={() => {
-    if (!user) {
-      window.location.href = "/login";
-      return;
-    }
+          <button
+            className="primary-btn"
+            disabled={isFull}
+            onClick={() => {
 
-    if (user.role !== "student") {
-      setError("Only student accounts can register for events.");
-      return;
-    }
+              // EVENT FULL
 
-    setShowForm(true);
-  }}
->
-  Register Now →
-</button>
+              if (isFull) {
+                return;
+              }
+
+
+              // NOT LOGGED IN
+
+              if (!user) {
+                window.location.href = "/login";
+                return;
+              }
+
+
+              // ADMIN TRYING TO REGISTER
+
+              if (user.role !== "student") {
+
+                setError(
+                  "Only student accounts can register for events."
+                );
+
+                return;
+              }
+
+
+              // OPEN FORM
+
+              setError("");
+              setShowForm(true);
+
+            }}
+          >
+
+            {isFull
+              ? "Event Full"
+              : "Register Now →"}
+
+          </button>
+
         </section>
 
       )}
 
 
       {/* =========================
+          ERROR OUTSIDE FORM
+      ========================= */}
+
+      {!showForm &&
+        !submitted &&
+        error && (
+
+          <p className="form-error">
+            {error}
+          </p>
+
+        )}
+
+
+      {/* =========================
           REGISTRATION FORM
       ========================= */}
 
-      {showForm && !submitted && (
+      {showForm &&
+        !submitted &&
+        !isFull && (
 
-        <section className="registration-section">
+          <section className="registration-section">
 
-          <div className="registration-heading">
+            <div className="registration-heading">
 
-            <p className="section-label">
-              JOIN THE EVENT
-            </p>
-
-            <h2>
-              Reserve your spot.
-            </h2>
-
-          </div>
-
-
-          <form
-            className="registration-form"
-            onSubmit={handleSubmit}
-          >
-
-
-            {/* NAME */}
-
-            <label>
-
-              Full Name
-
-              <input
-                type="text"
-                placeholder="Enter your name"
-                value={formData.name}
-                readOnly
-              />
-
-            </label>
-
-
-            {/* EMAIL */}
-
-            <label>
-
-              Email
-
-              <input
-                type="email"
-                placeholder="you@example.com"
-                value={formData.email}
-                readOnly
-              />
-
-            </label>
-
-
-            {/* COLLEGE / YEAR */}
-
-            <label>
-
-              College / Year
-
-              <input
-                type="text"
-                placeholder="B.Tech 2nd Year"
-                value={formData.collegeYear}
-                readOnly
-              />
-
-            </label>
-
-
-            {/* PHONE */}
-
-            <label>
-
-              Phone Number
-
-              <input
-                type="tel"
-                placeholder="9876543210"
-                value={formData.phone}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    phone: e.target.value
-                  })
-                }
-                required
-              />
-
-            </label>
-
-
-            {/* ERROR */}
-
-            {error && (
-
-              <p className="form-error">
-                {error}
+              <p className="section-label">
+                JOIN THE EVENT
               </p>
 
-            )}
+              <h2>
+                Reserve your spot.
+              </h2>
+
+            </div>
 
 
-            {/* SUBMIT */}
-
-            <button
-              type="submit"
-              className="primary-btn"
-              disabled={submitting}
+            <form
+              className="registration-form"
+              onSubmit={handleSubmit}
             >
 
-              {submitting
-                ? "Registering..."
-                : "Confirm Registration →"}
 
-            </button>
+              {/* NAME */}
 
-          </form>
+              <label>
 
-        </section>
+                Full Name
 
-      )}
+                <input
+                  type="text"
+                  placeholder="Enter your name"
+                  value={formData.name}
+                  readOnly
+                />
+
+              </label>
+
+
+              {/* EMAIL */}
+
+              <label>
+
+                Email
+
+                <input
+                  type="email"
+                  placeholder="you@example.com"
+                  value={formData.email}
+                  readOnly
+                />
+
+              </label>
+
+
+              {/* COLLEGE / YEAR */}
+
+              <label>
+
+                College / Year
+
+                <input
+                  type="text"
+                  placeholder="B.Tech 2nd Year"
+                  value={formData.collegeYear}
+                  readOnly
+                />
+
+              </label>
+
+
+              {/* PHONE */}
+
+              <label>
+
+                Phone Number
+
+                <input
+                  type="tel"
+                  placeholder="9876543210"
+                  value={formData.phone}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      phone: e.target.value
+                    })
+                  }
+                  required
+                />
+
+              </label>
+
+
+              {/* ERROR */}
+
+              {error && (
+
+                <p className="form-error">
+                  {error}
+                </p>
+
+              )}
+
+
+              {/* SUBMIT */}
+
+              <button
+                type="submit"
+                className="primary-btn"
+                disabled={submitting}
+              >
+
+                {submitting
+                  ? "Registering..."
+                  : "Confirm Registration →"}
+
+              </button>
+
+            </form>
+
+          </section>
+
+        )}
 
 
       {/* =========================
@@ -455,11 +584,15 @@ function EventDetails() {
           </h2>
 
           <p>
+
             Your spot for{" "}
+
             <strong>
               {event.name}
             </strong>{" "}
+
             has been reserved.
+
           </p>
 
 
@@ -500,6 +633,7 @@ function EventDetails() {
     </main>
 
   );
+
 }
 
 export default EventDetails;

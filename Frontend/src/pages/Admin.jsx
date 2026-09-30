@@ -207,6 +207,15 @@ const filteredRegistrations =
   });
    
 
+  const upcomingEvents = events.filter((event) => {
+  const eventDate = new Date(event.date);
+  const today = new Date();
+
+  today.setHours(0, 0, 0, 0);
+
+  return eventDate >= today;
+});
+
   return (
     <main className="admin-page">
 
@@ -274,7 +283,7 @@ const filteredRegistrations =
           </span>
 
           <strong>
-            {events.length}
+            {upcomingEvents.length}
           </strong>
 
           <p>
@@ -592,7 +601,7 @@ const filteredRegistrations =
 
           <input
             type="text"
-            placeholder="Search students..."
+            placeholder="Search students or Events..."
             value={search}
             onChange={(e) =>
               setSearch(e.target.value)

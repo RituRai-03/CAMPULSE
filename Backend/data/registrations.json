@@ -94,5 +94,13 @@
     "collegeYear": "",
     "phone": "987654356",
     "eventId": 4
+  },
+  {
+    "id": 1790762839854,
+    "name": "Demo Student",
+    "email": "student@campus.com",
+    "collegeYear": "",
+    "phone": "987654356",
+    "eventId": 1790762804243
   }
 ]

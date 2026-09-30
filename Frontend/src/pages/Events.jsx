@@ -225,20 +225,26 @@ function Events() {
                   </strong>
 
                   <span>
-                    {" "}registered
+                    {" "}
+                    {event.registered >= event.capacity 
+                    ? "Event full"
+                    : "registered"}
                   </span>
 
                 </div>
 
 
-                <button
-                  onClick={() => {
-                    window.location.href =
-                      `/event?id=${event.id}`;
-                  }}
-                >
-                  Register →
-                </button>
+<button
+  disabled={event.registered >= event.capacity}
+  onClick={() => {
+    window.location.href =
+      `/event?id=${event.id}`;
+  }}
+>
+  {event.registered >= event.capacity
+    ? "Event Full"
+    : "Register →"}
+</button>
 
               </div>
 

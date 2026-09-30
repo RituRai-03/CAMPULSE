@@ -72,36 +72,83 @@ app.post("/api/events", (req, res) => {
 // ==============================
 
 app.delete("/api/events/:id", (req, res) => {
+
     const events = JSON.parse(
-        fs.readFileSync("./data/events.json", "utf-8")
+        fs.readFileSync(
+            "./data/events.json",
+            "utf-8"
+        )
+    );
+
+    const registrations = JSON.parse(
+        fs.readFileSync(
+            "./data/registrations.json",
+            "utf-8"
+        )
     );
 
     const eventId = Number(req.params.id);
 
-    const eventExists = events.some(
+
+    // Check whether event exists
+
+    const event = events.find(
         (event) => event.id === eventId
     );
 
-    if (!eventExists) {
+    if (!event) {
+
         return res.status(404).json({
             message: "Event not found"
         });
+
     }
 
-    const updatedEvents = events.filter(
-        (event) => event.id !== eventId
-    );
+
+    // Check whether students are registered
+
+    const hasRegistrations =
+        registrations.some(
+            (registration) =>
+                registration.eventId === eventId
+        );
+
+
+    if (hasRegistrations) {
+
+        return res.status(400).json({
+            message:
+                "This event cannot be deleted because students are already registered."
+        });
+
+    }
+
+
+    // Delete event
+
+    const updatedEvents =
+        events.filter(
+            (event) =>
+                event.id !== eventId
+        );
+
 
     fs.writeFileSync(
         "./data/events.json",
-        JSON.stringify(updatedEvents, null, 2)
+        JSON.stringify(
+            updatedEvents,
+            null,
+            2
+        )
     );
 
-    res.json({
-        message: "Event deleted successfully"
-    });
-});
 
+    res.json({
+        message:
+            "Event deleted successfully"
+    });
+
+});
 
 // ==============================
 // UPDATE EVENT
