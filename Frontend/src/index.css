@@ -693,3 +693,105 @@ body {
     align-items: flex-start;
   }
 }
+/* ADMIN REGISTRATIONS */
+
+.admin-registrations {
+  padding: 70px 0 20px;
+}
+
+.registration-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 30px;
+  margin-bottom: 35px;
+}
+
+.registration-list-header h2 {
+  font-size: 36px;
+  letter-spacing: -1.5px;
+}
+
+.registration-list-header input {
+  width: 280px;
+  height: 48px;
+  border: 1px solid #cfcfca;
+  background: transparent;
+  padding: 0 15px;
+  font-size: 14px;
+}
+
+.registration-list-header input:focus {
+  outline: 2px solid #e4572e;
+  outline-offset: -2px;
+}
+
+.registration-table {
+  border-top: 1px solid #171717;
+}
+
+.registration-table-header,
+.registration-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1.5fr 1.2fr 1fr 0.8fr;
+  gap: 20px;
+  align-items: center;
+}
+
+.registration-table-header {
+  padding: 15px 0;
+  border-bottom: 1px solid #ccc;
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: #e4572e;
+  font-weight: 700;
+}
+
+.registration-row {
+  padding: 20px 0;
+  border-bottom: 1px solid #ddd;
+  font-size: 13px;
+}
+
+.registration-row span {
+  color: #666;
+}
+
+.registration-row strong {
+  font-size: 14px;
+}
+
+.no-registrations {
+  padding: 60px 0;
+  border-top: 1px solid #171717;
+  border-bottom: 1px solid #ccc;
+}
+
+.no-registrations h3 {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.no-registrations p {
+  color: #666;
+}
+
+@media (max-width: 900px) {
+  .registration-list-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .registration-list-header input {
+    width: 100%;
+  }
+
+  .registration-table {
+    overflow-x: auto;
+  }
+
+  .registration-table-header,
+  .registration-row {
+    min-width: 800px;
+  }
+}
