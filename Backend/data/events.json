@@ -1,0 +1,46 @@
+[
+  {
+    "id": 1,
+    "name": "Code After Dark",
+    "category": "Technical",
+    "date": "02 October 2026",
+    "time": "6:00 PM – 9:00 PM",
+    "venue": "Raman Block",
+    "description": "A competitive coding experience designed for students who enjoy solving problems.",
+    "registered": 42,
+    "capacity": 60
+  },
+  {
+    "id": 2,
+    "name": "Design Unlocked",
+    "category": "Workshop",
+    "date": "05 October 2026",
+    "time": "11:00 AM – 1:00 PM",
+    "venue": "Vishwakarma Block",
+    "description": "A hands-on UI/UX workshop focused on solving real student problems.",
+    "registered": 28,
+    "capacity": 40
+  },
+  {
+    "id": 3,
+    "name": "Battle of Ideas",
+    "category": "Competition",
+    "date": "09 October 2026",
+    "time": "2:00 PM – 5:00 PM",
+    "venue": "Raman Block",
+    "description": "Pitch your idea, challenge your thinking and compete with other students.",
+    "registered": 34,
+    "capacity": 50
+  },
+  {
+    "id": 4,
+    "name": "Open Mic Night",
+    "category": "Cultural",
+    "date": "12 October 2026",
+    "time": "5:30 PM – 8:00 PM",
+    "venue": "Vishwakarma Block",
+    "description": "Music, poetry, comedy and performances by students from across campus.",
+    "registered": 55,
+    "capacity": 80
+  }
+]
