@@ -8,7 +8,7 @@ function Events() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/events")
+    fetch("/api/events")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to fetch events");
@@ -51,7 +51,7 @@ function Events() {
 
       {/* =========================
           HEADER
-      ========================= */}
+          ========================= */}
 
       <section className="events-header">
 
@@ -74,8 +74,8 @@ function Events() {
 
 
       {/* =========================
-          SEARCH + FILTER
-      ========================= */}
+          SEARCH / FILTER
+          ========================= */}
 
       <section className="event-controls">
 
@@ -94,6 +94,7 @@ function Events() {
             setCategory(e.target.value)
           }
         >
+
           <option value="All">
             All Categories
           </option>
@@ -121,11 +122,9 @@ function Events() {
 
       {/* =========================
           EVENTS
-      ========================= */}
+          ========================= */}
 
       <section className="events-grid">
-
-        {/* LOADING */}
 
         {loading ? (
 
@@ -142,8 +141,6 @@ function Events() {
           </div>
 
         ) : error ? (
-
-          /* ERROR */
 
           <div className="events-loading">
 
@@ -170,8 +167,6 @@ function Events() {
           </div>
 
         ) : filteredEvents.length > 0 ? (
-
-          /* EVENTS */
 
           filteredEvents.map((event) => (
 
@@ -221,30 +216,46 @@ function Events() {
                 <div>
 
                   <strong>
-                    {event.registered}/{event.capacity}
+                    {event.registered}/
+                    {event.capacity}
                   </strong>
 
                   <span>
                     {" "}
-                    {event.registered >= event.capacity 
-                    ? "Event full"
-                    : "registered"}
+                    {event.registered >=
+                    event.capacity
+                      ? "Event Full"
+                      : "registered"}
                   </span>
 
                 </div>
 
 
-<button
-  disabled={event.registered >= event.capacity}
-  onClick={() => {
-    window.location.href =
-      `/event?id=${event.id}`;
-  }}
->
-  {event.registered >= event.capacity
-    ? "Event Full"
-    : "Register →"}
-</button>
+                <button
+                  disabled={
+                    event.registered >=
+                    event.capacity
+                  }
+                  onClick={() => {
+
+                    if (
+                      event.registered >=
+                      event.capacity
+                    ) {
+                      return;
+                    }
+
+                    window.location.href =
+                      `/event?id=${event.id}`;
+                  }}
+                >
+
+                  {event.registered >=
+                  event.capacity
+                    ? "Event Full"
+                    : "Register →"}
+
+                </button>
 
               </div>
 
@@ -253,8 +264,6 @@ function Events() {
           ))
 
         ) : (
-
-          /* NO RESULTS */
 
           <div className="events-loading">
 
