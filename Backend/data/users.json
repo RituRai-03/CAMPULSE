@@ -12,5 +12,13 @@
     "email": "student@campus.com",
     "password": "student123",
     "role": "student"
+  },
+  {
+    "id": 1790752511185,
+    "name": "developer",
+    "email": "developer@campus.com",
+    "password": "developer",
+    "collegeYear": "B.Tech 2nd year",
+    "role": "student"
   }
 ]

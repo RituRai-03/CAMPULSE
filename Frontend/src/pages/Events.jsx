@@ -4,15 +4,25 @@ function Events() {
   const [events, setEvents] = useState([]);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("http://localhost:5000/api/events")
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch events");
+        }
+
+        return response.json();
+      })
       .then((data) => {
         setEvents(data);
       })
       .catch((error) => {
         console.error("Error fetching events:", error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, []);
 
@@ -22,7 +32,8 @@ function Events() {
       .includes(search.toLowerCase());
 
     const matchesCategory =
-      category === "All" || event.category === category;
+      category === "All" ||
+      event.category === category;
 
     return matchesSearch && matchesCategory;
   });
@@ -30,8 +41,15 @@ function Events() {
   return (
     <main className="events-page">
 
+      {/* =========================
+          HEADER
+      ========================= */}
+
       <section className="events-header">
-        <p className="eyebrow">CAMPUS EVENTS</p>
+
+        <p className="eyebrow">
+          CAMPUS EVENTS
+        </p>
 
         <h1>
           Find your
@@ -43,7 +61,13 @@ function Events() {
           Explore events, workshops and experiences
           happening around your campus.
         </p>
+
       </section>
+
+
+      {/* =========================
+          SEARCH + FILTER
+      ========================= */}
 
       <section className="event-controls">
 
@@ -58,72 +82,142 @@ function Events() {
           value={category}
           onChange={(e) => setCategory(e.target.value)}
         >
-          <option value="All">All Categories</option>
-          <option value="Technical">Technical</option>
-          <option value="Workshop">Workshop</option>
-          <option value="Competition">Competition</option>
-          <option value="Cultural">Cultural</option>
+          <option value="All">
+            All Categories
+          </option>
+
+          <option value="Technical">
+            Technical
+          </option>
+
+          <option value="Workshop">
+            Workshop
+          </option>
+
+          <option value="Competition">
+            Competition
+          </option>
+
+          <option value="Cultural">
+            Cultural
+          </option>
         </select>
 
       </section>
 
+
+      {/* =========================
+          EVENTS
+      ========================= */}
+
       <section className="events-grid">
 
-        {filteredEvents.map((event) => (
-          <article className="event-card" key={event.id}>
+        {loading ? (
 
-            <div className="event-card-top">
+          <div className="events-loading">
 
-              <span className="event-category">
-                {event.category}
-              </span>
+            <p className="section-label">
+              LOADING EVENTS
+            </p>
 
-              <span className="event-date">
-                {event.date}
-              </span>
+            <h2>
+              Loading upcoming events...
+            </h2>
 
-            </div>
+          </div>
 
-            <h2>{event.name}</h2>
+        ) : filteredEvents.length > 0 ? (
 
-            <p>{event.description}</p>
+          filteredEvents.map((event) => (
 
-            <div className="event-details">
-              <span>{event.time}</span>
-              <span>{event.venue}</span>
-            </div>
+            <article
+              className="event-card"
+              key={event.id}
+            >
 
-            <div className="event-bottom">
+              <div className="event-card-top">
 
-              <div>
-                <strong>
-                  {event.registered}/{event.capacity}
-                </strong>
+                <span className="event-category">
+                  {event.category}
+                </span>
 
-                <span> registered</span>
+                <span className="event-date">
+                  {event.date}
+                </span>
+
               </div>
 
-<button
-  onClick={() => {
-    window.location.href = `/event?id=${event.id}`;
-  }}
->
-  Register →
-</button>
 
-            </div>
+              <h2>
+                {event.name}
+              </h2>
 
-          </article>
-        ))}
+
+              <p>
+                {event.description}
+              </p>
+
+
+              <div className="event-details">
+
+                <span>
+                  {event.time}
+                </span>
+
+                <span>
+                  {event.venue}
+                </span>
+
+              </div>
+
+
+              <div className="event-bottom">
+
+                <div>
+
+                  <strong>
+                    {event.registered}/{event.capacity}
+                  </strong>
+
+                  <span>
+                    {" "}registered
+                  </span>
+
+                </div>
+
+
+                <button
+                  onClick={() => {
+                    window.location.href =
+                      `/event?id=${event.id}`;
+                  }}
+                >
+                  Register →
+                </button>
+
+              </div>
+
+            </article>
+
+          ))
+
+        ) : (
+
+          <div className="events-loading">
+
+            <p className="section-label">
+              NO EVENTS FOUND
+            </p>
+
+            <h2>
+              Nothing matches your search.
+            </h2>
+
+          </div>
+
+        )}
 
       </section>
-
-      {filteredEvents.length === 0 && (
-        <div className="no-events">
-          <h2>No events found.</h2>
-          <p>Try another search or category.</p>
-        </div>
-      )}
 
     </main>
   );

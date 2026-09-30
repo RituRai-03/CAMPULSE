@@ -71,6 +71,10 @@ function Login() {
 
       <section className="login-container">
 
+        {/* =========================
+            INTRO
+        ========================= */}
+
         <div className="login-intro">
 
           <p className="eyebrow">
@@ -90,6 +94,11 @@ function Login() {
 
         </div>
 
+
+        {/* =========================
+            LOGIN BOX
+        ========================= */}
+
         <div className="login-box">
 
           <p className="section-label">
@@ -99,6 +108,7 @@ function Login() {
           <h2>
             Welcome back.
           </h2>
+
 
           {/* ROLE SELECTOR */}
 
@@ -119,6 +129,7 @@ function Login() {
               Student
             </button>
 
+
             <button
               type="button"
               className={
@@ -135,6 +146,9 @@ function Login() {
             </button>
 
           </div>
+
+
+          {/* LOGIN FORM */}
 
           <form
             className="login-form"
@@ -160,6 +174,7 @@ function Login() {
 
             </label>
 
+
             <label>
               Password
 
@@ -175,11 +190,13 @@ function Login() {
 
             </label>
 
+
             {error && (
               <p className="login-error">
                 {error}
               </p>
             )}
+
 
             <button
               type="submit"
@@ -193,10 +210,35 @@ function Login() {
 
           </form>
 
+
+          {/* DEMO NOTE */}
+
           <p className="login-note">
             Demo access is provided for the recruitment
             prototype.
           </p>
+
+
+          {/* CREATE ACCOUNT */}
+
+          {role === "student" && (
+            <div className="create-account-link">
+
+              <span>
+                New to CAMPULSE?
+              </span>
+
+              <button
+                type="button"
+                onClick={() => {
+                  window.location.href = "/register";
+                }}
+              >
+                Create student account →
+              </button>
+
+            </div>
+          )}
 
         </div>
 

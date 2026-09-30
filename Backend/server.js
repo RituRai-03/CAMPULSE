@@ -274,6 +274,78 @@ app.post("/api/login", (req, res) => {
     });
 });
 
+// =========================
+// STUDENT REGISTRATION
+// =========================
+
+app.post("/api/register", (req, res) => {
+    const users = JSON.parse(
+        fs.readFileSync("./data/users.json", "utf-8")
+    );
+
+    const {
+        name,
+        email,
+        password,
+        collegeYear
+    } = req.body;
+
+    // Check required fields
+    if (
+        !name ||
+        !email ||
+        !password ||
+        !collegeYear
+    ) {
+        return res.status(400).json({
+            message: "Please fill in all fields"
+        });
+    }
+
+    // Check password length
+    if (password.length < 6) {
+        return res.status(400).json({
+            message:
+                "Password must be at least 6 characters"
+        });
+    }
+
+    // Check if email already exists
+    const existingUser = users.find(
+        (user) =>
+            user.email.toLowerCase() ===
+            email.toLowerCase()
+    );
+
+    if (existingUser) {
+        return res.status(400).json({
+            message:
+                "An account with this email already exists"
+        });
+    }
+
+    // Create new student
+    const newUser = {
+        id: Date.now(),
+        name,
+        email,
+        password,
+        collegeYear,
+        role: "student"
+    };
+
+    users.push(newUser);
+
+    fs.writeFileSync(
+        "./data/users.json",
+        JSON.stringify(users, null, 2)
+    );
+
+    res.status(201).json({
+        message: "Student account created successfully"
+    });
+});
+
 // ==============================
 // LOGIN
 // ==============================

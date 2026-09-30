@@ -182,19 +182,30 @@ function Admin() {
   // SEARCH REGISTRATIONS
   // =========================
 
-  const filteredRegistrations = registrations.filter(
-    (student) => {
-      const searchText = search.toLowerCase();
+const filteredRegistrations =
+  registrations.filter((student) => {
 
-      return (
-        student.name.toLowerCase().includes(searchText) ||
-        student.email.toLowerCase().includes(searchText) ||
-        student.collegeYear
-          .toLowerCase()
-          .includes(searchText)
-      );
-    }
-  );
+    const event = events.find(
+      (event) => event.id === student.eventId
+    );
+
+    const eventName = event?.name || "";
+
+    return (
+      student.name
+        .toLowerCase()
+        .includes(search.toLowerCase()) ||
+
+      student.email
+        .toLowerCase()
+        .includes(search.toLowerCase()) ||
+
+      eventName
+        .toLowerCase()
+        .includes(search.toLowerCase())
+    );
+  });
+   
 
   return (
     <main className="admin-page">

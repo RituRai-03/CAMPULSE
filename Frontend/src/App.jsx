@@ -5,6 +5,7 @@ import EventDetails from "./pages/EventDetails";
 import Admin from "./pages/Admin";
 import Login from "./pages/Login";
 import MyRegistrations from "./pages/MyRegistrations";
+import Register from "./pages/Register";
 
 function App() {
   const path = window.location.pathname;
@@ -29,6 +30,8 @@ function App() {
       <Navbar />
 {path === "/login" ? (
   <Login />
+) : path === "/register" ? (
+  <Register />
 ) : path === "/events" ? (
   <Events />
 ) : path === "/event" ? (

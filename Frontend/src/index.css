@@ -1333,3 +1333,109 @@ body {
   }
 
 }
+.events-loading {
+  grid-column: 1 / -1;
+  padding: 70px 0;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+}
+
+.events-loading h2 {
+  font-size: 38px;
+  letter-spacing: -1.5px;
+  margin-top: 15px;
+}
+
+@media (max-width: 600px) {
+  .events-loading h2 {
+    font-size: 30px;
+  }
+}
+
+/* =========================
+   CREATE ACCOUNT
+========================= */
+
+.create-account-link {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid #ddd;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 15px;
+
+  font-size: 12px;
+}
+
+.create-account-link span {
+  color: #777;
+}
+
+.create-account-link button,
+.login-link {
+  border: none;
+  background: transparent;
+
+  padding: 0;
+
+  color: #171717;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.create-account-link button:hover,
+.login-link:hover {
+  color: #e4572e;
+}
+
+
+/* =========================
+   REGISTER SUCCESS
+========================= */
+
+.register-success {
+  margin: -5px 0 0;
+
+  color: #2e7d32;
+
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+
+/* =========================
+   REGISTER PAGE
+========================= */
+
+.register-page {
+  min-height: calc(100vh - 72px);
+  padding: 70px 7%;
+
+  display: flex;
+  align-items: center;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+
+  .create-account-link {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .register-page {
+    padding: 50px 5% 80px;
+  }
+
+}

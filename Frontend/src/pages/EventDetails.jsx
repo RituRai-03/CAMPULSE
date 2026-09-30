@@ -110,11 +110,15 @@ if (!event) {
           </p>
         </div>
 
-        <div className="event-date-large">
-          <span>02</span>
-          <small>OCT</small>
-        </div>
+   <div className="event-date-large">
+  <span>
+    {event.date.split(" ")[0]}
+  </span>
 
+  <small>
+    {event.date.split(" ")[1]?.substring(0, 3).toUpperCase()}
+  </small>
+</div>
       </section>
 
       {/* EVENT INFORMATION */}
