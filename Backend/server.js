@@ -5,470 +5,805 @@ const path = require("path");
 
 const app = express();
 
+
+// =====================================================
+// MIDDLEWARE
+// =====================================================
+
 app.use(cors());
-app.use(express.json());
+
+app.use(
+  express.json()
+);
 
 
-// ==============================
-// HOME
-// ==============================
+// =====================================================
+// DATA FILES
+// =====================================================
 
-app.get("/", (req, res) => {
-    res.json({
-        message: "CAMPULSE API is running"
-    });
-});
+const eventsFile = path.join(
+  __dirname,
+  "data",
+  "events.json"
+);
+
+const registrationsFile = path.join(
+  __dirname,
+  "data",
+  "registrations.json"
+);
+
+const usersFile = path.join(
+  __dirname,
+  "data",
+  "users.json"
+);
 
 
-// ==============================
-// GET ALL EVENTS
-// ==============================
+// =====================================================
+// HELPER FUNCTIONS
+// =====================================================
 
-app.get("/api/events", (req, res) => {
-    const events = JSON.parse(
-        fs.readFileSync("./data/events.json", "utf-8")
+function readData(file) {
+
+  try {
+
+    if (!fs.existsSync(file)) {
+      return [];
+    }
+
+    const data =
+      fs.readFileSync(
+        file,
+        "utf8"
+      );
+
+    return data
+      ? JSON.parse(data)
+      : [];
+
+  } catch (error) {
+
+    console.error(
+      "Error reading file:",
+      file,
+      error
     );
+
+    return [];
+
+  }
+
+}
+
+
+function writeData(file, data) {
+
+  fs.writeFileSync(
+    file,
+    JSON.stringify(
+      data,
+      null,
+      2
+    )
+  );
+
+}
+
+
+// =====================================================
+// API HEALTH CHECK
+// =====================================================
+
+app.get(
+  "/api",
+  (req, res) => {
+
+    res.json({
+      message:
+        "CAMPULSE API is running"
+    });
+
+  }
+);
+
+
+// =====================================================
+// EVENTS
+// =====================================================
+
+
+// GET ALL EVENTS
+
+app.get(
+  "/api/events",
+  (req, res) => {
+
+    const events =
+      readData(eventsFile);
 
     res.json(events);
-});
+
+  }
+);
 
 
-// ==============================
 // ADD EVENT
-// ==============================
 
-app.post("/api/events", (req, res) => {
-    const events = JSON.parse(
-        fs.readFileSync("./data/events.json", "utf-8")
-    );
+app.post(
+  "/api/events",
+  (req, res) => {
+
+    const events =
+      readData(eventsFile);
+
+    const {
+      name,
+      category,
+      date,
+      time,
+      venue,
+      description,
+      capacity
+    } = req.body;
+
+
+    if (
+      !name ||
+      !category ||
+      !date ||
+      !time ||
+      !venue ||
+      !description ||
+      !capacity
+    ) {
+
+      return res.status(400).json({
+        message:
+          "Please fill in all event fields"
+      });
+
+    }
+
 
     const newEvent = {
-        id: Date.now(),
-        name: req.body.name,
-        category: req.body.category,
-        date: req.body.date,
-        time: req.body.time,
-        venue: req.body.venue,
-        description: req.body.description,
-        registered: 0,
-        capacity: Number(req.body.capacity)
+
+      id:
+        events.length > 0
+          ? Math.max(
+              ...events.map(
+                (event) =>
+                  Number(event.id) || 0
+              )
+            ) + 1
+          : 1,
+
+      name,
+
+      category,
+
+      date,
+
+      time,
+
+      venue,
+
+      description,
+
+      capacity:
+        Number(capacity),
+
+      registered: 0
+
     };
+
 
     events.push(newEvent);
 
-    fs.writeFileSync(
-        "./data/events.json",
-        JSON.stringify(events, null, 2)
-    );
-
-    res.status(201).json({
-        message: "Event created successfully",
-        event: newEvent
-    });
-});
-
-
-// ==============================
-// DELETE EVENT
-// ==============================
-
-app.delete("/api/events/:id", (req, res) => {
-
-    const events = JSON.parse(
-        fs.readFileSync(
-            "./data/events.json",
-            "utf-8"
-        )
-    );
-
-    const registrations = JSON.parse(
-        fs.readFileSync(
-            "./data/registrations.json",
-            "utf-8"
-        )
-    );
-
-    const eventId = Number(req.params.id);
-
-
-    // Check whether event exists
-
-    const event = events.find(
-        (event) => event.id === eventId
-    );
-
-    if (!event) {
-
-        return res.status(404).json({
-            message: "Event not found"
-        });
-
-    }
-
-
-    // Check whether students are registered
-
-    const hasRegistrations =
-        registrations.some(
-            (registration) =>
-                registration.eventId === eventId
-        );
-
-
-    if (hasRegistrations) {
-
-        return res.status(400).json({
-            message:
-                "This event cannot be deleted because students are already registered."
-        });
-
-    }
-
-
-    // Delete event
-
-    const updatedEvents =
-        events.filter(
-            (event) =>
-                event.id !== eventId
-        );
-
-
-    fs.writeFileSync(
-        "./data/events.json",
-        JSON.stringify(
-            updatedEvents,
-            null,
-            2
-        )
+    writeData(
+      eventsFile,
+      events
     );
 
 
-    res.json({
-        message:
-            "Event deleted successfully"
-    });
+    res.status(201).json(
+      newEvent
+    );
 
-});
+  }
+);
 
-// ==============================
+
 // UPDATE EVENT
-// ==============================
 
-app.put("/api/events/:id", (req, res) => {
-    const events = JSON.parse(
-        fs.readFileSync("./data/events.json", "utf-8")
-    );
+app.put(
+  "/api/events/:id",
+  (req, res) => {
 
-    const eventId = Number(req.params.id);
+    const events =
+      readData(eventsFile);
 
-    const eventIndex = events.findIndex(
-        (event) => event.id === eventId
-    );
+    const id =
+      Number(req.params.id);
+
+    const eventIndex =
+      events.findIndex(
+        (event) =>
+          Number(event.id) === id
+      );
+
 
     if (eventIndex === -1) {
-        return res.status(404).json({
-            message: "Event not found"
-        });
+
+      return res.status(404).json({
+        message:
+          "Event not found"
+      });
+
     }
 
-    const existingEvent = events[eventIndex];
 
-    const updatedEvent = {
-        ...existingEvent,
-        name: req.body.name,
-        category: req.body.category,
-        date: req.body.date,
-        time: req.body.time,
-        venue: req.body.venue,
-        description: req.body.description,
-        capacity: Number(req.body.capacity)
+    const oldEvent =
+      events[eventIndex];
+
+    const {
+      name,
+      category,
+      date,
+      time,
+      venue,
+      description,
+      capacity
+    } = req.body;
+
+
+    events[eventIndex] = {
+
+      ...oldEvent,
+
+      name:
+        name || oldEvent.name,
+
+      category:
+        category || oldEvent.category,
+
+      date:
+        date || oldEvent.date,
+
+      time:
+        time || oldEvent.time,
+
+      venue:
+        venue || oldEvent.venue,
+
+      description:
+        description ||
+        oldEvent.description,
+
+      capacity:
+        capacity !== undefined
+          ? Number(capacity)
+          : oldEvent.capacity
+
     };
 
-    if (
-        updatedEvent.capacity <
-        existingEvent.registered
-    ) {
-        return res.status(400).json({
-            message:
-                "Capacity cannot be less than current registrations"
-        });
+
+    writeData(
+      eventsFile,
+      events
+    );
+
+
+    res.json(
+      events[eventIndex]
+    );
+
+  }
+);
+
+
+// DELETE EVENT
+
+app.delete(
+  "/api/events/:id",
+  (req, res) => {
+
+    const events =
+      readData(eventsFile);
+
+    const id =
+      Number(req.params.id);
+
+
+    const eventExists =
+      events.some(
+        (event) =>
+          Number(event.id) === id
+      );
+
+
+    if (!eventExists) {
+
+      return res.status(404).json({
+        message:
+          "Event not found"
+      });
+
     }
 
-    events[eventIndex] = updatedEvent;
 
-    fs.writeFileSync(
-        "./data/events.json",
-        JSON.stringify(events, null, 2)
+    const updatedEvents =
+      events.filter(
+        (event) =>
+          Number(event.id) !== id
+      );
+
+
+    writeData(
+      eventsFile,
+      updatedEvents
     );
+
 
     res.json({
-        message: "Event updated successfully",
-        event: updatedEvent
+      message:
+        "Event deleted successfully"
     });
-});
+
+  }
+);
 
 
-// ==============================
-// EVENT REGISTRATION
-// ==============================
+// =====================================================
+// REGISTRATIONS
+// =====================================================
 
-app.post("/api/registrations", (req, res) => {
-    const events = JSON.parse(
-        fs.readFileSync("./data/events.json", "utf-8")
+
+// GET ALL REGISTRATIONS
+
+app.get(
+  "/api/registrations",
+  (req, res) => {
+
+    const registrations =
+      readData(
+        registrationsFile
+      );
+
+    res.json(
+      registrations
     );
 
-    const registrations = JSON.parse(
-        fs.readFileSync("./data/registrations.json", "utf-8")
-    );
+  }
+);
+
+
+// REGISTER FOR EVENT
+
+app.post(
+  "/api/registrations",
+  (req, res) => {
+
+    const registrations =
+      readData(
+        registrationsFile
+      );
+
+    const events =
+      readData(eventsFile);
+
 
     const {
-        name,
-        email,
-        collegeYear,
-        phone,
-        eventId
+      name,
+      email,
+      collegeYear,
+      phone,
+      eventId
     } = req.body;
 
-    const event = events.find(
-        (event) =>
-            event.id === Number(eventId)
-    );
 
-    // Check whether event exists
-    if (!event) {
-        return res.status(404).json({
-            message: "Event not found"
-        });
+    if (
+      !name ||
+      !email ||
+      !collegeYear ||
+      !eventId
+    ) {
+
+      return res.status(400).json({
+        message:
+          "Please fill in all required fields"
+      });
+
     }
 
-    // Check duplicate registration
+
+    const numericEventId =
+      Number(eventId);
+
+
+    const event =
+      events.find(
+        (item) =>
+          Number(item.id) ===
+          numericEventId
+      );
+
+
+    if (!event) {
+
+      return res.status(404).json({
+        message:
+          "Event not found"
+      });
+
+    }
+
+
+    // CHECK CAPACITY
+
+    if (
+      Number(event.registered) >=
+      Number(event.capacity)
+    ) {
+
+      return res.status(400).json({
+        message:
+          "This event is full."
+      });
+
+    }
+
+
+    // PREVENT DUPLICATE REGISTRATION
+
     const alreadyRegistered =
-        registrations.some(
-            (registration) =>
-                registration.email.toLowerCase() ===
-                    email.toLowerCase() &&
-                registration.eventId ===
-                    Number(eventId)
-        );
+      registrations.some(
+        (registration) =>
+          Number(
+            registration.eventId
+          ) === numericEventId &&
+          registration.email
+            ?.toLowerCase() ===
+            email.toLowerCase()
+      );
+
 
     if (alreadyRegistered) {
-        return res.status(400).json({
-            message:
-                "This email is already registered for this event"
-        });
+
+      return res.status(400).json({
+        message:
+          "You are already registered for this event."
+      });
+
     }
 
-    // Check event capacity
-    if (
-        event.registered >=
-        event.capacity
-    ) {
-        return res.status(400).json({
-            message: "This event is full"
-        });
-    }
 
-    // Create registration
-    const registration = {
-        id: Date.now(),
-        name,
-        email,
-        collegeYear,
-        phone,
-        eventId: Number(eventId)
+    const newRegistration = {
+
+      id:
+        registrations.length > 0
+          ? Math.max(
+              ...registrations.map(
+                (registration) =>
+                  Number(
+                    registration.id
+                  ) || 0
+              )
+            ) + 1
+          : 1,
+
+      eventId:
+        numericEventId,
+
+      name,
+
+      email,
+
+      collegeYear,
+
+      phone:
+        phone || ""
+
     };
 
-    registrations.push(registration);
 
-    // Increase registered count
-    event.registered += 1;
-
-    // Save registrations
-    fs.writeFileSync(
-        "./data/registrations.json",
-        JSON.stringify(
-            registrations,
-            null,
-            2
-        )
+    registrations.push(
+      newRegistration
     );
 
-    // Save updated event
-    fs.writeFileSync(
-        "./data/events.json",
-        JSON.stringify(
-            events,
-            null,
-            2
-        )
+
+    // INCREASE EVENT COUNT
+
+    event.registered =
+      Number(event.registered || 0) +
+      1;
+
+
+    writeData(
+      registrationsFile,
+      registrations
     );
+
+    writeData(
+      eventsFile,
+      events
+    );
+
 
     res.status(201).json({
-        message:
-            "Registration successful",
-        registration
+      message:
+        "Registration successful",
+      registration:
+        newRegistration
     });
-});
+
+  }
+);
 
 
-// ==============================
-// GET ALL REGISTRATIONS
-// ==============================
+// =====================================================
+// STUDENT REGISTER
+// =====================================================
 
-app.get("/api/registrations", (req, res) => {
-    const registrations = JSON.parse(
-        fs.readFileSync(
-            "./data/registrations.json",
-            "utf-8"
-        )
-    );
+app.post(
+  "/api/register",
+  (req, res) => {
 
-    res.json(registrations);
-});
-
-
-// ==============================
-// STUDENT ACCOUNT REGISTRATION
-// ==============================
-
-app.post("/api/register", (req, res) => {
-    const users = JSON.parse(
-        fs.readFileSync(
-            "./data/users.json",
-            "utf-8"
-        )
-    );
+    const users =
+      readData(usersFile);
 
     const {
-        name,
-        email,
-        password,
-        collegeYear,
-        phone
+      name,
+      email,
+      password,
+      collegeYear,
+      phone
     } = req.body;
 
-    // Check required fields
+
     if (
-        !name ||
-        !email ||
-        !password ||
-        !collegeYear ||
-        !phone
+      !name ||
+      !email ||
+      !password ||
+      !collegeYear
     ) {
-        return res.status(400).json({
-            message:
-                "Please fill in all fields"
-        });
+
+      return res.status(400).json({
+        message:
+          "Please fill in all required fields"
+      });
+
     }
 
-    // Check password length
-    if (password.length < 6) {
-        return res.status(400).json({
-            message:
-                "Password must be at least 6 characters"
-        });
-    }
 
-    // Check if email already exists
-    const existingUser = users.find(
+    const existingUser =
+      users.find(
         (user) =>
-            user.email.toLowerCase() ===
-            email.toLowerCase()
-    );
+          user.email
+            ?.toLowerCase() ===
+          email.toLowerCase()
+      );
+
 
     if (existingUser) {
-        return res.status(400).json({
-            message:
-                "An account with this email already exists"
-        });
+
+      return res.status(400).json({
+        message:
+          "An account with this email already exists."
+      });
+
     }
 
-    // Create new student
+
     const newUser = {
-        id: Date.now(),
-        name,
-        email,
-        password,
-        collegeYear,
-        phone,
-        role: "student"
+
+      id:
+        users.length > 0
+          ? Math.max(
+              ...users.map(
+                (user) =>
+                  Number(user.id) || 0
+              )
+            ) + 1
+          : 1,
+
+      name,
+
+      email,
+
+      password,
+
+      collegeYear,
+
+      phone:
+        phone || "",
+
+      role:
+        "student"
+
     };
+
 
     users.push(newUser);
 
-    // Save user
-    fs.writeFileSync(
-        "./data/users.json",
-        JSON.stringify(
-            users,
-            null,
-            2
-        )
+    writeData(
+      usersFile,
+      users
     );
+
 
     res.status(201).json({
-        message:
-            "Student account created successfully"
+      message:
+        "Account created successfully",
+      user: {
+        id:
+          newUser.id,
+        name:
+          newUser.name,
+        email:
+          newUser.email,
+        collegeYear:
+          newUser.collegeYear,
+        role:
+          newUser.role
+      }
     });
-});
+
+  }
+);
 
 
-// ==============================
+// =====================================================
 // LOGIN
-// ==============================
+// =====================================================
 
-app.post("/api/login", (req, res) => {
-    const users = JSON.parse(
-        fs.readFileSync(
-            "./data/users.json",
-            "utf-8"
-        )
-    );
+app.post(
+  "/api/login",
+  (req, res) => {
+
+    const users =
+      readData(usersFile);
 
     const {
-        email,
-        password
+      email,
+      password
     } = req.body;
 
-    const user = users.find(
-        (user) =>
-            user.email.toLowerCase() ===
-                email.toLowerCase() &&
-            user.password === password
-    );
 
-    if (!user) {
-        return res.status(401).json({
-            message:
-                "Invalid email or password"
-        });
+    if (
+      !email ||
+      !password
+    ) {
+
+      return res.status(400).json({
+        message:
+          "Email and password are required"
+      });
+
     }
 
-    res.json({
+
+    const user =
+      users.find(
+        (item) =>
+          item.email
+            ?.toLowerCase() ===
+            email.toLowerCase() &&
+          item.password ===
+            password
+      );
+
+
+    if (!user) {
+
+      return res.status(401).json({
         message:
-            "Login successful",
+          "Invalid email or password"
+      });
 
-        user: {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            collegeYear:
-                user.collegeYear || "",
-            phone:
-                user.phone || "",
-            role: user.role
-        }
+    }
+
+
+    res.json({
+
+      message:
+        "Login successful",
+
+      user: {
+
+        id:
+          user.id,
+
+        name:
+          user.name,
+
+        email:
+          user.email,
+
+        collegeYear:
+          user.collegeYear,
+
+        role:
+          user.role
+
+      }
+
     });
-});
+
+  }
+);
 
 
-// ==============================
-// START SERVER
-// ==============================
+// =====================================================
+// SERVE REACT FRONTEND
+// =====================================================
 
-app.listen(5000, () => {
-    console.log(
-        "Server running on http://localhost:5000"
+const frontendPath =
+  path.join(
+    __dirname,
+    "..",
+    "Frontend",
+    "dist"
+  );
+
+
+app.use(
+  express.static(
+    frontendPath
+  )
+);
+
+
+// =====================================================
+// REACT ROUTING
+// =====================================================
+
+app.use(
+  (req, res, next) => {
+
+    // Never send API requests
+    // to React
+
+    if (
+      req.path.startsWith(
+        "/api/"
+      )
+    ) {
+
+      return next();
+
+    }
+
+
+    // Send every frontend route
+    // to React
+
+    res.sendFile(
+      path.join(
+        frontendPath,
+        "index.html"
+      )
     );
-});
+
+  }
+);
+
+
+// =====================================================
+// SERVER
+// =====================================================
+
+const PORT =
+  process.env.PORT || 5000;
+
+
+app.listen(
+  PORT,
+  () => {
+
+    console.log(
+      `CAMPULSE server running on port ${PORT}`
+    );
+
+  }
+);
