@@ -19,36 +19,70 @@ function Admin() {
 
   const [search, setSearch] = useState("");
 
+
   // =========================
-  // LOAD DATA
+  // LOAD EVENTS
   // =========================
 
   const loadEvents = () => {
-    fetch("http://localhost:5000/api/events")
-      .then((response) => response.json())
+    fetch("/api/events")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(
+            "Failed to fetch events"
+          );
+        }
+
+        return response.json();
+      })
       .then((data) => {
         setEvents(data);
       })
       .catch((error) => {
-        console.error("Error fetching events:", error);
+        console.error(
+          "Error fetching events:",
+          error
+        );
       });
   };
 
+
+  // =========================
+  // LOAD REGISTRATIONS
+  // =========================
+
   const loadRegistrations = () => {
-    fetch("http://localhost:5000/api/registrations")
-      .then((response) => response.json())
+    fetch("/api/registrations")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(
+            "Failed to fetch registrations"
+          );
+        }
+
+        return response.json();
+      })
       .then((data) => {
         setRegistrations(data);
       })
       .catch((error) => {
-        console.error("Error fetching registrations:", error);
+        console.error(
+          "Error fetching registrations:",
+          error
+        );
       });
   };
+
+
+  // =========================
+  // LOAD DATA
+  // =========================
 
   useEffect(() => {
     loadEvents();
     loadRegistrations();
   }, []);
+
 
   // =========================
   // RESET FORM
@@ -68,6 +102,7 @@ function Admin() {
     setEditingEvent(null);
   };
 
+
   // =========================
   // ADD / UPDATE EVENT
   // =========================
@@ -77,27 +112,40 @@ function Admin() {
 
     try {
       const url = editingEvent
-        ? `http://localhost:5000/api/events/${editingEvent.id}`
-        : "http://localhost:5000/api/events";
+        ? `/api/events/${editingEvent.id}`
+        : "/api/events";
 
-      const method = editingEvent ? "PUT" : "POST";
+      const method = editingEvent
+        ? "PUT"
+        : "POST";
 
-      const response = await fetch(url, {
-        method: method,
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(eventForm)
-      });
+      const response = await fetch(
+        url,
+        {
+          method: method,
 
-      const data = await response.json();
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify(
+            eventForm
+          )
+        }
+      );
+
+      const data =
+        await response.json();
 
       if (!response.ok) {
         throw new Error(
           data.message ||
-            (editingEvent
-              ? "Failed to update event"
-              : "Failed to create event")
+            (
+              editingEvent
+                ? "Failed to update event"
+                : "Failed to create event"
+            )
         );
       }
 
@@ -111,17 +159,23 @@ function Admin() {
       setShowEventForm(false);
 
       loadEvents();
+
     } catch (error) {
       console.error(error);
-      alert(error.message);
+
+      alert(
+        error.message
+      );
     }
   };
+
 
   // =========================
   // EDIT EVENT
   // =========================
 
   const handleEditEvent = (event) => {
+
     setEditingEvent(event);
 
     setEventForm({
@@ -142,85 +196,124 @@ function Admin() {
     });
   };
 
+
   // =========================
   // DELETE EVENT
   // =========================
 
   const handleDeleteEvent = async (id) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this event?"
-    );
+
+    const confirmDelete =
+      window.confirm(
+        "Are you sure you want to delete this event?"
+      );
 
     if (!confirmDelete) {
       return;
     }
 
     try {
+
       const response = await fetch(
-        `http://localhost:5000/api/events/${id}`,
+        `/api/events/${id}`,
         {
           method: "DELETE"
         }
       );
 
-      const data = await response.json();
+      const data =
+        await response.json();
 
       if (!response.ok) {
         throw new Error(
-          data.message || "Failed to delete event"
+          data.message ||
+          "Failed to delete event"
         );
       }
 
-      alert("Event deleted successfully.");
+      alert(
+        "Event deleted successfully."
+      );
 
       loadEvents();
+
     } catch (error) {
+
       console.error(error);
-      alert(error.message);
+
+      alert(
+        error.message
+      );
     }
   };
+
 
   // =========================
   // SEARCH REGISTRATIONS
   // =========================
 
-  const filteredRegistrations = registrations.filter(
-    (student) => {
-      const event = events.find(
-        (event) => event.id === student.eventId
-      );
+  const filteredRegistrations =
+    registrations.filter(
+      (student) => {
 
-      const eventName = event?.name || "";
+        const event =
+          events.find(
+            (event) =>
+              event.id ===
+              student.eventId
+          );
 
-      return (
-        student.name
-          .toLowerCase()
-          .includes(search.toLowerCase()) ||
-        student.email
-          .toLowerCase()
-          .includes(search.toLowerCase()) ||
-        eventName
-          .toLowerCase()
-          .includes(search.toLowerCase())
-      );
-    }
-  );
+        const eventName =
+          event?.name || "";
+
+        const searchText =
+          search.toLowerCase();
+
+        return (
+          student.name
+            .toLowerCase()
+            .includes(searchText) ||
+
+          student.email
+            .toLowerCase()
+            .includes(searchText) ||
+
+          eventName
+            .toLowerCase()
+            .includes(searchText)
+        );
+      }
+    );
+
 
   // =========================
   // UPCOMING EVENTS
   // =========================
 
-  const upcomingEvents = events.filter((event) => {
-    const eventDate = new Date(event.date);
-    const today = new Date();
+  const upcomingEvents =
+    events.filter((event) => {
 
-    today.setHours(0, 0, 0, 0);
+      const eventDate =
+        new Date(event.date);
 
-    return eventDate >= today;
-  });
+      const today =
+        new Date();
+
+      today.setHours(
+        0,
+        0,
+        0,
+        0
+      );
+
+      return eventDate >= today;
+    });
+
 
   return (
+
     <main className="admin-page">
+
 
       {/* =========================
           HEADER
@@ -245,11 +338,13 @@ function Admin() {
 
       </section>
 
+
       {/* =========================
           STATS
           ========================= */}
 
       <section className="admin-stats">
+
 
         <div className="admin-stat">
 
@@ -267,6 +362,7 @@ function Admin() {
 
         </div>
 
+
         <div className="admin-stat">
 
           <span>
@@ -282,6 +378,7 @@ function Admin() {
           </p>
 
         </div>
+
 
         <div className="admin-stat">
 
@@ -299,13 +396,16 @@ function Admin() {
 
         </div>
 
+
       </section>
+
 
       {/* =========================
           EVENT MANAGEMENT
           ========================= */}
 
       <section className="admin-event-management">
+
 
         <div className="admin-section-heading">
 
@@ -321,6 +421,7 @@ function Admin() {
 
           </div>
 
+
           <button
             className="primary-btn"
             onClick={() => {
@@ -329,7 +430,10 @@ function Admin() {
                 resetEventForm();
               }
 
-              setShowEventForm(!showEventForm);
+              setShowEventForm(
+                !showEventForm
+              );
+
             }}
           >
             {showEventForm
@@ -339,6 +443,7 @@ function Admin() {
 
         </div>
 
+
         {/* =========================
             ADD / EDIT EVENT FORM
             ========================= */}
@@ -347,20 +452,27 @@ function Admin() {
 
           <form
             className="event-form"
-            onSubmit={handleEventSubmit}
+            onSubmit={
+              handleEventSubmit
+            }
           >
 
+
             <label>
+
               Event Name
 
               <input
                 type="text"
                 placeholder="Hackathon 2026"
-                value={eventForm.name}
+                value={
+                  eventForm.name
+                }
                 onChange={(e) =>
                   setEventForm({
                     ...eventForm,
-                    name: e.target.value
+                    name:
+                      e.target.value
                   })
                 }
                 required
@@ -368,15 +480,20 @@ function Admin() {
 
             </label>
 
+
             <label>
+
               Category
 
               <select
-                value={eventForm.category}
+                value={
+                  eventForm.category
+                }
                 onChange={(e) =>
                   setEventForm({
                     ...eventForm,
-                    category: e.target.value
+                    category:
+                      e.target.value
                   })
                 }
               >
@@ -401,17 +518,22 @@ function Admin() {
 
             </label>
 
+
             <label>
+
               Date
 
               <input
                 type="text"
                 placeholder="20 October 2026"
-                value={eventForm.date}
+                value={
+                  eventForm.date
+                }
                 onChange={(e) =>
                   setEventForm({
                     ...eventForm,
-                    date: e.target.value
+                    date:
+                      e.target.value
                   })
                 }
                 required
@@ -419,17 +541,22 @@ function Admin() {
 
             </label>
 
+
             <label>
+
               Time
 
               <input
                 type="text"
                 placeholder="10:00 AM – 1:00 PM"
-                value={eventForm.time}
+                value={
+                  eventForm.time
+                }
                 onChange={(e) =>
                   setEventForm({
                     ...eventForm,
-                    time: e.target.value
+                    time:
+                      e.target.value
                   })
                 }
                 required
@@ -437,15 +564,20 @@ function Admin() {
 
             </label>
 
+
             <label>
+
               Venue
 
               <select
-                value={eventForm.venue}
+                value={
+                  eventForm.venue
+                }
                 onChange={(e) =>
                   setEventForm({
                     ...eventForm,
-                    venue: e.target.value
+                    venue:
+                      e.target.value
                   })
                 }
               >
@@ -462,18 +594,23 @@ function Admin() {
 
             </label>
 
+
             <label>
+
               Capacity
 
               <input
                 type="number"
                 placeholder="60"
                 min="1"
-                value={eventForm.capacity}
+                value={
+                  eventForm.capacity
+                }
                 onChange={(e) =>
                   setEventForm({
                     ...eventForm,
-                    capacity: e.target.value
+                    capacity:
+                      e.target.value
                   })
                 }
                 required
@@ -481,16 +618,21 @@ function Admin() {
 
             </label>
 
+
             <label className="event-form-full">
+
               Description
 
               <textarea
                 placeholder="Describe the event..."
-                value={eventForm.description}
+                value={
+                  eventForm.description
+                }
                 onChange={(e) =>
                   setEventForm({
                     ...eventForm,
-                    description: e.target.value
+                    description:
+                      e.target.value
                   })
                 }
                 required
@@ -498,7 +640,9 @@ function Admin() {
 
             </label>
 
+
             <div className="event-form-actions">
+
 
               <button
                 type="submit"
@@ -509,14 +653,20 @@ function Admin() {
                   : "Create Event →"}
               </button>
 
+
               {editingEvent && (
 
                 <button
                   type="button"
                   className="delete-btn"
                   onClick={() => {
+
                     resetEventForm();
-                    setShowEventForm(false);
+
+                    setShowEventForm(
+                      false
+                    );
+
                   }}
                 >
                   Cancel Edit
@@ -524,11 +674,14 @@ function Admin() {
 
               )}
 
+
             </div>
+
 
           </form>
 
         )}
+
 
         {/* =========================
             EVENT LIST
@@ -536,80 +689,103 @@ function Admin() {
 
         <div className="admin-event-list">
 
-          {events.map((event) => (
 
-            <article
-              className="admin-event-row"
-              key={event.id}
-            >
+          {events.map(
+            (event) => (
 
-              <div>
+              <article
+                className="admin-event-row"
+                key={event.id}
+              >
 
-                <span className="event-category">
-                  {event.category}
-                </span>
 
-                <h3>
-                  {event.name}
-                </h3>
+                <div>
 
-                <p>
-                  {event.date} · {event.time}
-                </p>
+                  <span className="event-category">
+                    {event.category}
+                  </span>
 
-              </div>
+                  <h3>
+                    {event.name}
+                  </h3>
 
-              <div className="admin-event-info">
+                  <p>
+                    {event.date} · {event.time}
+                  </p>
 
-                <span>
-                  {event.venue}
-                </span>
+                </div>
 
-            <div className="admin-capacity">
-  <strong>
-    {event.registered}/{event.capacity}
-  </strong>
 
-  <span
-    className={
-      event.registered >= event.capacity
-        ? "capacity-full"
-        : "capacity-available"
-    }
-  >
-    {event.registered >= event.capacity
-      ? "FULL"
-      : "AVAILABLE"}
-  </span>
-</div>
+                <div className="admin-event-info">
 
-                <button
-                  className="edit-btn"
-                  onClick={() =>
-                    handleEditEvent(event)
-                  }
-                >
-                  Edit
-                </button>
 
-                <button
-                  className="delete-btn"
-                  onClick={() =>
-                    handleDeleteEvent(event.id)
-                  }
-                >
-                  Delete
-                </button>
+                  <span>
+                    {event.venue}
+                  </span>
 
-              </div>
 
-            </article>
+                  <div className="admin-capacity">
 
-          ))}
+                    <strong>
+                      {event.registered}/
+                      {event.capacity}
+                    </strong>
+
+                    <span
+                      className={
+                        event.registered >=
+                        event.capacity
+                          ? "capacity-full"
+                          : "capacity-available"
+                      }
+                    >
+                      {event.registered >=
+                      event.capacity
+                        ? "FULL"
+                        : "AVAILABLE"}
+                    </span>
+
+                  </div>
+
+
+                  <button
+                    className="edit-btn"
+                    onClick={() =>
+                      handleEditEvent(
+                        event
+                      )
+                    }
+                  >
+                    Edit
+                  </button>
+
+
+                  <button
+                    className="delete-btn"
+                    onClick={() =>
+                      handleDeleteEvent(
+                        event.id
+                      )
+                    }
+                  >
+                    Delete
+                  </button>
+
+
+                </div>
+
+
+              </article>
+
+            )
+          )}
+
 
         </div>
 
+
       </section>
+
 
       {/* =========================
           REGISTRATIONS
@@ -617,7 +793,9 @@ function Admin() {
 
       <section className="admin-registrations">
 
+
         <div className="registration-list-header">
+
 
           <div>
 
@@ -631,30 +809,52 @@ function Admin() {
 
           </div>
 
+
           <input
             type="text"
             placeholder="Search students or events..."
             value={search}
             onChange={(e) =>
-              setSearch(e.target.value)
+              setSearch(
+                e.target.value
+              )
             }
           />
 
+
         </div>
 
-        {filteredRegistrations.length > 0 ? (
+
+        {filteredRegistrations.length >
+        0 ? (
 
           <div className="registration-table">
 
+
             <div className="registration-table-header">
 
-              <span>NAME</span>
-              <span>EMAIL</span>
-              <span>COLLEGE / YEAR</span>
-              <span>PHONE</span>
-              <span>EVENT</span>
+              <span>
+                NAME
+              </span>
+
+              <span>
+                EMAIL
+              </span>
+
+              <span>
+                COLLEGE / YEAR
+              </span>
+
+              <span>
+                PHONE
+              </span>
+
+              <span>
+                EVENT
+              </span>
 
             </div>
+
 
             {filteredRegistrations.map(
               (student) => (
@@ -683,14 +883,17 @@ function Admin() {
                   <span>
                     {events.find(
                       (event) =>
-                        event.id === student.eventId
-                    )?.name || "Unknown event"}
+                        event.id ===
+                        student.eventId
+                    )?.name ||
+                      "Unknown event"}
                   </span>
 
                 </div>
 
               )
             )}
+
 
           </div>
 
@@ -712,9 +915,12 @@ function Admin() {
 
         )}
 
+
       </section>
 
+
     </main>
+
   );
 }
 
