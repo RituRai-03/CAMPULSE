@@ -1824,3 +1824,30 @@ body {
   background: #d6d6d1;
   transform: none;
 }
+/* ==============================
+   ADMIN CAPACITY STATUS
+   ============================== */
+
+.admin-capacity {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin-capacity strong {
+  font-size: 13px;
+}
+
+.admin-capacity span {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+}
+
+.capacity-available {
+  color: #2e7d32;
+}
+
+.capacity-full {
+  color: #c0392b;
+}

@@ -171,6 +171,8 @@ function Admin() {
         );
       }
 
+      alert("Event deleted successfully.");
+
       loadEvents();
     } catch (error) {
       console.error(error);
@@ -182,44 +184,47 @@ function Admin() {
   // SEARCH REGISTRATIONS
   // =========================
 
-const filteredRegistrations =
-  registrations.filter((student) => {
+  const filteredRegistrations = registrations.filter(
+    (student) => {
+      const event = events.find(
+        (event) => event.id === student.eventId
+      );
 
-    const event = events.find(
-      (event) => event.id === student.eventId
-    );
+      const eventName = event?.name || "";
 
-    const eventName = event?.name || "";
+      return (
+        student.name
+          .toLowerCase()
+          .includes(search.toLowerCase()) ||
+        student.email
+          .toLowerCase()
+          .includes(search.toLowerCase()) ||
+        eventName
+          .toLowerCase()
+          .includes(search.toLowerCase())
+      );
+    }
+  );
 
-    return (
-      student.name
-        .toLowerCase()
-        .includes(search.toLowerCase()) ||
-
-      student.email
-        .toLowerCase()
-        .includes(search.toLowerCase()) ||
-
-      eventName
-        .toLowerCase()
-        .includes(search.toLowerCase())
-    );
-  });
-   
+  // =========================
+  // UPCOMING EVENTS
+  // =========================
 
   const upcomingEvents = events.filter((event) => {
-  const eventDate = new Date(event.date);
-  const today = new Date();
+    const eventDate = new Date(event.date);
+    const today = new Date();
 
-  today.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
 
-  return eventDate >= today;
-});
+    return eventDate >= today;
+  });
 
   return (
     <main className="admin-page">
 
-      {/* HEADER */}
+      {/* =========================
+          HEADER
+          ========================= */}
 
       <section className="admin-header">
 
@@ -240,7 +245,9 @@ const filteredRegistrations =
 
       </section>
 
-      {/* STATS */}
+      {/* =========================
+          STATS
+          ========================= */}
 
       <section className="admin-stats">
 
@@ -294,7 +301,9 @@ const filteredRegistrations =
 
       </section>
 
-      {/* EVENT MANAGEMENT */}
+      {/* =========================
+          EVENT MANAGEMENT
+          ========================= */}
 
       <section className="admin-event-management">
 
@@ -315,6 +324,7 @@ const filteredRegistrations =
           <button
             className="primary-btn"
             onClick={() => {
+
               if (showEventForm) {
                 resetEventForm();
               }
@@ -329,7 +339,9 @@ const filteredRegistrations =
 
         </div>
 
-        {/* ADD / EDIT EVENT FORM */}
+        {/* =========================
+            ADD / EDIT EVENT FORM
+            ========================= */}
 
         {showEventForm && (
 
@@ -498,6 +510,7 @@ const filteredRegistrations =
               </button>
 
               {editingEvent && (
+
                 <button
                   type="button"
                   className="delete-btn"
@@ -508,6 +521,7 @@ const filteredRegistrations =
                 >
                   Cancel Edit
                 </button>
+
               )}
 
             </div>
@@ -516,7 +530,9 @@ const filteredRegistrations =
 
         )}
 
-        {/* EVENT LIST */}
+        {/* =========================
+            EVENT LIST
+            ========================= */}
 
         <div className="admin-event-list">
 
@@ -549,9 +565,23 @@ const filteredRegistrations =
                   {event.venue}
                 </span>
 
-                <strong>
-                  {event.registered}/{event.capacity}
-                </strong>
+            <div className="admin-capacity">
+  <strong>
+    {event.registered}/{event.capacity}
+  </strong>
+
+  <span
+    className={
+      event.registered >= event.capacity
+        ? "capacity-full"
+        : "capacity-available"
+    }
+  >
+    {event.registered >= event.capacity
+      ? "FULL"
+      : "AVAILABLE"}
+  </span>
+</div>
 
                 <button
                   className="edit-btn"
@@ -581,7 +611,9 @@ const filteredRegistrations =
 
       </section>
 
-      {/* REGISTRATIONS */}
+      {/* =========================
+          REGISTRATIONS
+          ========================= */}
 
       <section className="admin-registrations">
 
@@ -601,7 +633,7 @@ const filteredRegistrations =
 
           <input
             type="text"
-            placeholder="Search students or Events..."
+            placeholder="Search students or events..."
             value={search}
             onChange={(e) =>
               setSearch(e.target.value)
@@ -648,11 +680,12 @@ const filteredRegistrations =
                     {student.phone}
                   </span>
 
-        <span>
-  {events.find(
-    (event) => event.id === student.eventId
-  )?.name || "Unknown event"}
-</span>
+                  <span>
+                    {events.find(
+                      (event) =>
+                        event.id === student.eventId
+                    )?.name || "Unknown event"}
+                  </span>
 
                 </div>
 
