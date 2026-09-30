@@ -103,13 +103,13 @@ function Events() {
                 <span> registered</span>
               </div>
 
-              <button
-                onClick={() => {
-                  window.location.href = "/event";
-                }}
-              >
-                Register →
-              </button>
+<button
+  onClick={() => {
+    window.location.href = `/event?id=${event.id}`;
+  }}
+>
+  Register →
+</button>
 
             </div>
 

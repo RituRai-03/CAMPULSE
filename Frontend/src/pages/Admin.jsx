@@ -5,6 +5,7 @@ function Admin() {
   const [registrations, setRegistrations] = useState([]);
 
   const [showEventForm, setShowEventForm] = useState(false);
+  const [editingEvent, setEditingEvent] = useState(null);
 
   const [eventForm, setEventForm] = useState({
     name: "",
@@ -50,45 +51,95 @@ function Admin() {
   }, []);
 
   // =========================
-  // ADD EVENT
+  // RESET FORM
+  // =========================
+
+  const resetEventForm = () => {
+    setEventForm({
+      name: "",
+      category: "Technical",
+      date: "",
+      time: "",
+      venue: "Raman Block",
+      description: "",
+      capacity: ""
+    });
+
+    setEditingEvent(null);
+  };
+
+  // =========================
+  // ADD / UPDATE EVENT
   // =========================
 
   const handleEventSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/events",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(eventForm)
-        }
-      );
+      const url = editingEvent
+        ? `http://localhost:5000/api/events/${editingEvent.id}`
+        : "http://localhost:5000/api/events";
 
-      if (!response.ok) {
-        throw new Error("Failed to create event");
-      }
+      const method = editingEvent ? "PUT" : "POST";
 
-      setEventForm({
-        name: "",
-        category: "Technical",
-        date: "",
-        time: "",
-        venue: "Raman Block",
-        description: "",
-        capacity: ""
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(eventForm)
       });
 
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
+            (editingEvent
+              ? "Failed to update event"
+              : "Failed to create event")
+        );
+      }
+
+      alert(
+        editingEvent
+          ? "Event updated successfully."
+          : "Event created successfully."
+      );
+
+      resetEventForm();
       setShowEventForm(false);
 
       loadEvents();
     } catch (error) {
       console.error(error);
-      alert("Unable to create event.");
+      alert(error.message);
     }
+  };
+
+  // =========================
+  // EDIT EVENT
+  // =========================
+
+  const handleEditEvent = (event) => {
+    setEditingEvent(event);
+
+    setEventForm({
+      name: event.name,
+      category: event.category,
+      date: event.date,
+      time: event.time,
+      venue: event.venue,
+      description: event.description,
+      capacity: event.capacity
+    });
+
+    setShowEventForm(true);
+
+    window.scrollTo({
+      top: 450,
+      behavior: "smooth"
+    });
   };
 
   // =========================
@@ -112,14 +163,18 @@ function Admin() {
         }
       );
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error("Failed to delete event");
+        throw new Error(
+          data.message || "Failed to delete event"
+        );
       }
 
       loadEvents();
     } catch (error) {
       console.error(error);
-      alert("Unable to delete event.");
+      alert(error.message);
     }
   };
 
@@ -165,7 +220,6 @@ function Admin() {
 
       </section>
 
-
       {/* STATS */}
 
       <section className="admin-stats">
@@ -186,7 +240,6 @@ function Admin() {
 
         </div>
 
-
         <div className="admin-stat">
 
           <span>
@@ -202,7 +255,6 @@ function Admin() {
           </p>
 
         </div>
-
 
         <div className="admin-stat">
 
@@ -221,7 +273,6 @@ function Admin() {
         </div>
 
       </section>
-
 
       {/* EVENT MANAGEMENT */}
 
@@ -243,9 +294,13 @@ function Admin() {
 
           <button
             className="primary-btn"
-            onClick={() =>
-              setShowEventForm(!showEventForm)
-            }
+            onClick={() => {
+              if (showEventForm) {
+                resetEventForm();
+              }
+
+              setShowEventForm(!showEventForm);
+            }}
           >
             {showEventForm
               ? "Close Form"
@@ -254,8 +309,7 @@ function Admin() {
 
         </div>
 
-
-        {/* ADD EVENT FORM */}
+        {/* ADD / EDIT EVENT FORM */}
 
         {showEventForm && (
 
@@ -281,7 +335,6 @@ function Admin() {
               />
 
             </label>
-
 
             <label>
               Category
@@ -316,7 +369,6 @@ function Admin() {
 
             </label>
 
-
             <label>
               Date
 
@@ -335,7 +387,6 @@ function Admin() {
 
             </label>
 
-
             <label>
               Time
 
@@ -353,7 +404,6 @@ function Admin() {
               />
 
             </label>
-
 
             <label>
               Venue
@@ -380,7 +430,6 @@ function Admin() {
 
             </label>
 
-
             <label>
               Capacity
 
@@ -400,7 +449,6 @@ function Admin() {
 
             </label>
 
-
             <label className="event-form-full">
               Description
 
@@ -418,18 +466,35 @@ function Admin() {
 
             </label>
 
+            <div className="event-form-actions">
 
-            <button
-              type="submit"
-              className="primary-btn"
-            >
-              Create Event →
-            </button>
+              <button
+                type="submit"
+                className="primary-btn"
+              >
+                {editingEvent
+                  ? "Update Event →"
+                  : "Create Event →"}
+              </button>
+
+              {editingEvent && (
+                <button
+                  type="button"
+                  className="delete-btn"
+                  onClick={() => {
+                    resetEventForm();
+                    setShowEventForm(false);
+                  }}
+                >
+                  Cancel Edit
+                </button>
+              )}
+
+            </div>
 
           </form>
 
         )}
-
 
         {/* EVENT LIST */}
 
@@ -458,7 +523,6 @@ function Admin() {
 
               </div>
 
-
               <div className="admin-event-info">
 
                 <span>
@@ -468,6 +532,15 @@ function Admin() {
                 <strong>
                   {event.registered}/{event.capacity}
                 </strong>
+
+                <button
+                  className="edit-btn"
+                  onClick={() =>
+                    handleEditEvent(event)
+                  }
+                >
+                  Edit
+                </button>
 
                 <button
                   className="delete-btn"
@@ -488,7 +561,6 @@ function Admin() {
 
       </section>
 
-
       {/* REGISTRATIONS */}
 
       <section className="admin-registrations">
@@ -507,7 +579,6 @@ function Admin() {
 
           </div>
 
-
           <input
             type="text"
             placeholder="Search students..."
@@ -518,7 +589,6 @@ function Admin() {
           />
 
         </div>
-
 
         {filteredRegistrations.length > 0 ? (
 
@@ -533,7 +603,6 @@ function Admin() {
               <span>EVENT</span>
 
             </div>
-
 
             {filteredRegistrations.map(
               (student) => (

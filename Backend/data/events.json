@@ -7,7 +7,7 @@
     "time": "6:00 PM – 9:00 PM",
     "venue": "Raman Block",
     "description": "A competitive coding experience designed for students who enjoy solving problems.",
-    "registered": 44,
+    "registered": 46,
     "capacity": 60
   },
   {
@@ -19,7 +19,7 @@
     "venue": "Vishwakarma Block",
     "description": "A hands-on UI/UX workshop focused on solving real student problems.",
     "registered": 28,
-    "capacity": 40
+    "capacity": 45
   },
   {
     "id": 3,
@@ -40,7 +40,7 @@
     "time": "5:30 PM – 8:00 PM",
     "venue": "Vishwakarma Block",
     "description": "Music, poetry, comedy and performances by students from across campus.",
-    "registered": 55,
+    "registered": 56,
     "capacity": 80
   }
 ]

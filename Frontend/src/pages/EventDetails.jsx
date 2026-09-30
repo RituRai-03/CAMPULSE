@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
-const eventId = 1;
+const params = new URLSearchParams(window.location.search);
+const eventId = Number(params.get("id"));
 
 function EventDetails() {
 

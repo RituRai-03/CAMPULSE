@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "name": "CAMPULSE Admin",
+    "email": "admin@campulse.com",
+    "password": "admin123",
+    "role": "admin"
+  },
+  {
+    "id": 2,
+    "name": "Demo Student",
+    "email": "student@campus.com",
+    "password": "student123",
+    "role": "student"
+  }
+]

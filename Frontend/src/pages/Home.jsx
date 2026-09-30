@@ -16,9 +16,15 @@ function Home() {
           experiences happening around your campus.
         </p>
 
-        <button className="primary-btn">
-          Explore Events
-        </button>
+    <button
+  className="primary-btn"
+  onClick={() => {
+    window.location.href = "/events";
+  }}
+>
+  Explore Events →
+</button>
+
       </section>
 
       <section className="featured">
