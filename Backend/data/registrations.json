@@ -1,1 +1,34 @@
-[]
+[
+  {
+    "id": 1790746436451,
+    "name": "coder ",
+    "email": "coder123@gmail.com",
+    "collegeYear": "B.Tech 2nd year",
+    "phone": "8765432341",
+    "eventId": 1
+  },
+  {
+    "id": 1790746788656,
+    "name": "coder1 ",
+    "email": "coder563@gmail.com",
+    "collegeYear": "B.Tech 2nd year",
+    "phone": "876542234",
+    "eventId": 1
+  },
+  {
+    "id": 1790746908124,
+    "name": "coder2",
+    "email": "coder873@gmail.com",
+    "collegeYear": "B.Tech 2nd year",
+    "phone": "9876543223",
+    "eventId": 1
+  },
+  {
+    "id": 1790747206646,
+    "name": "coder3",
+    "email": "coder4563@gmail.com",
+    "collegeYear": "B.Tech 2nd year",
+    "phone": "9876543265",
+    "eventId": 1
+  }
+]

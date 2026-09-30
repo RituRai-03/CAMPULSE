@@ -1,59 +1,20 @@
-import { useState } from "react";
-
-const events = [
-  {
-    id: 1,
-    name: "Code After Dark",
-    category: "Technical",
-    date: "02 OCT",
-    time: "6:00 PM",
-    venue: "Innovation Lab",
-    description:
-      "A competitive coding experience for students who love solving problems.",
-    registered: 42,
-    capacity: 60
-  },
-  {
-    id: 2,
-    name: "Design Unlocked",
-    category: "Workshop",
-    date: "05 OCT",
-    time: "11:00 AM",
-    venue: "Design Studio",
-    description:
-      "A hands-on UI/UX workshop focused on solving real student problems.",
-    registered: 28,
-    capacity: 40
-  },
-  {
-    id: 3,
-    name: "Battle of Ideas",
-    category: "Competition",
-    date: "09 OCT",
-    time: "2:00 PM",
-    venue: "Auditorium",
-    description:
-      "Pitch your idea, challenge your thinking and compete with other students.",
-    registered: 34,
-    capacity: 50
-  },
-  {
-    id: 4,
-    name: "Open Mic Night",
-    category: "Cultural",
-    date: "12 OCT",
-    time: "5:30 PM",
-    venue: "Amphitheatre",
-    description:
-      "Music, poetry, comedy and performances by students from across campus.",
-    registered: 55,
-    capacity: 80
-  }
-];
+import { useEffect, useState } from "react";
 
 function Events() {
+  const [events, setEvents] = useState([]);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/events")
+      .then((response) => response.json())
+      .then((data) => {
+        setEvents(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching events:", error);
+      });
+  }, []);
 
   const filteredEvents = events.filter((event) => {
     const matchesSearch = event.name
@@ -72,7 +33,11 @@ function Events() {
       <section className="events-header">
         <p className="eyebrow">CAMPUS EVENTS</p>
 
-        <h1>Find your<br />next thing.</h1>
+        <h1>
+          Find your
+          <br />
+          next thing.
+        </h1>
 
         <p>
           Explore events, workshops and experiences
@@ -108,6 +73,7 @@ function Events() {
           <article className="event-card" key={event.id}>
 
             <div className="event-card-top">
+
               <span className="event-category">
                 {event.category}
               </span>
@@ -115,6 +81,7 @@ function Events() {
               <span className="event-date">
                 {event.date}
               </span>
+
             </div>
 
             <h2>{event.name}</h2>
@@ -137,12 +104,12 @@ function Events() {
               </div>
 
               <button
-     onClick={() => {
-       window.location.href = "/event";
-    }}
-     >
-       Register →
-     </button>
+                onClick={() => {
+                  window.location.href = "/event";
+                }}
+              >
+                Register →
+              </button>
 
             </div>
 

@@ -39,7 +39,7 @@ function Home() {
           <div className="event-info">
             <strong>02 OCT</strong>
             <span>6:00 PM</span>
-            <span>Innovation Lab</span>
+            <span>Raman Block</span>
           </div>
         </div>
       </section>

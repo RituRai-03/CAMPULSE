@@ -1,33 +1,100 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-const event = {
-  id: 1,
-  name: "Code After Dark",
-  category: "Technical",
-  date: "02 October 2026",
-  time: "6:00 PM – 9:00 PM",
-  venue: "Innovation Lab",
-  description:
-    "A competitive coding experience designed for students who enjoy solving problems, thinking under pressure and building solutions.",
-  registered: 42,
-  capacity: 60,
-  teamSize: "1–2 members",
-  certificate: "Yes",
-  registrationDeadline: "01 October 2026"
-};
+const eventId = 1;
 
 function EventDetails() {
+
+    const [event, setEvent] = useState(null);
+    const [loading, setLoading] = useState(true);
+  
+    useEffect(() => {
+  fetch("http://localhost:5000/api/events")
+    .then((response) => response.json())
+    .then((data) => {
+      const selectedEvent = data.find(
+        (item) => item.id === eventId
+      );
+
+      setEvent(selectedEvent);
+      setLoading(false);
+    })
+    .catch((error) => {
+      console.error("Error fetching event:", error);
+      setLoading(false);
+    });
+}, []);
+
   const [showForm, setShowForm] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e) => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    collegeYear: "",
+    phone: ""
+  });
+
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
+
+    setSubmitting(true);
+    setError("");
+
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/registrations",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            ...formData,
+            eventId: event.id
+          })
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Registration failed");
+      }
+
+      setSubmitted(true);
+    } catch (error) {
+      console.error(error);
+      setError(
+        error.message || "Unable to register. Please try again."
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
+
+  if (loading) {
+  return (
+    <main className="event-details-page">
+      <p>Loading event...</p>
+    </main>
+  );
+}
+
+if (!event) {
+  return (
+    <main className="event-details-page">
+      <h2>Event not found.</h2>
+    </main>
+  );
+}
 
   return (
     <main className="event-details-page">
 
+      {/* EVENT HERO */}
       <section className="event-hero">
 
         <div>
@@ -49,6 +116,7 @@ function EventDetails() {
 
       </section>
 
+      {/* EVENT INFORMATION */}
       <section className="event-meta">
 
         <div>
@@ -72,6 +140,7 @@ function EventDetails() {
 
       </section>
 
+      {/* REGISTRATION CTA */}
       {!showForm && !submitted && (
         <section className="event-registration">
 
@@ -86,7 +155,9 @@ function EventDetails() {
 
             <p>
               Registration closes on{" "}
-              <strong>{event.registrationDeadline}</strong>.
+              <strong>
+                {event.registrationDeadline}
+              </strong>.
             </p>
           </div>
 
@@ -100,6 +171,7 @@ function EventDetails() {
         </section>
       )}
 
+      {/* REGISTRATION FORM */}
       {showForm && !submitted && (
         <section className="registration-section">
 
@@ -108,7 +180,9 @@ function EventDetails() {
               JOIN THE EVENT
             </p>
 
-            <h2>Reserve your spot.</h2>
+            <h2>
+              Reserve your spot.
+            </h2>
           </div>
 
           <form
@@ -116,51 +190,94 @@ function EventDetails() {
             onSubmit={handleSubmit}
           >
 
+            {/* NAME */}
             <label>
               Full Name
 
               <input
                 type="text"
                 placeholder="Enter your name"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    name: e.target.value
+                  })
+                }
                 required
               />
             </label>
 
+            {/* EMAIL */}
             <label>
               Email
 
               <input
                 type="email"
                 placeholder="you@example.com"
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    email: e.target.value
+                  })
+                }
                 required
               />
             </label>
 
+            {/* COLLEGE / YEAR */}
             <label>
               College / Year
 
               <input
                 type="text"
                 placeholder="B.Tech 2nd Year"
+                value={formData.collegeYear}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    collegeYear: e.target.value
+                  })
+                }
                 required
               />
             </label>
 
+            {/* PHONE */}
             <label>
               Phone Number
 
               <input
                 type="tel"
                 placeholder="9876543210"
+                value={formData.phone}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    phone: e.target.value
+                  })
+                }
                 required
               />
             </label>
 
+            {/* ERROR */}
+            {error && (
+              <p className="form-error">
+                {error}
+              </p>
+            )}
+
+            {/* SUBMIT */}
             <button
               type="submit"
               className="primary-btn"
+              disabled={submitting}
             >
-              Confirm Registration →
+              {submitting
+                ? "Registering..."
+                : "Confirm Registration →"}
             </button>
 
           </form>
@@ -168,6 +285,7 @@ function EventDetails() {
         </section>
       )}
 
+      {/* SUCCESS */}
       {submitted && (
         <section className="registration-success">
 
@@ -184,19 +302,24 @@ function EventDetails() {
           </h2>
 
           <p>
-            Your spot for <strong>{event.name}</strong> has
-            been reserved.
+            Your spot for{" "}
+            <strong>{event.name}</strong>{" "}
+            has been reserved.
           </p>
 
           <div className="registration-ticket">
+
             <span>EVENT</span>
             <strong>{event.name}</strong>
 
             <span>DATE</span>
-            <strong>{event.date} · {event.time}</strong>
+            <strong>
+              {event.date} · {event.time}
+            </strong>
 
             <span>VENUE</span>
             <strong>{event.venue}</strong>
+
           </div>
 
         </section>
