@@ -62,5 +62,29 @@
     "collegeYear": "B.Tech 2nd year",
     "phone": "987654356",
     "eventId": 1
+  },
+  {
+    "id": 1790750684707,
+    "name": "coder1",
+    "email": "coder1234@gmail.com",
+    "collegeYear": "B.Tech 2nd year",
+    "phone": "987654356",
+    "eventId": 3
+  },
+  {
+    "id": 1790750782385,
+    "name": "chulbuli ",
+    "email": "chulbuli123@gmail.com",
+    "collegeYear": "B.Tech 2nd year",
+    "phone": "876543233",
+    "eventId": 3
+  },
+  {
+    "id": 1790750925851,
+    "name": "chulbuli ",
+    "email": "student@campus.com",
+    "collegeYear": "B.Tech 2nd year",
+    "phone": "8765432341",
+    "eventId": 2
   }
 ]

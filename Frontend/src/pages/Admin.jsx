@@ -628,9 +628,11 @@ function Admin() {
                     {student.phone}
                   </span>
 
-                  <span>
-                    Event #{student.eventId}
-                  </span>
+        <span>
+  {events.find(
+    (event) => event.id === student.eventId
+  )?.name || "Unknown event"}
+</span>
 
                 </div>
 

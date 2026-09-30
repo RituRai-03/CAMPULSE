@@ -31,6 +31,12 @@ function Navbar() {
           </a>
         )}
 
+        {user?.role === "student" && (
+  <a href="/my-registrations">
+    My Registrations
+  </a>
+)}
+
         {!user ? (
           <a href="/login">
             Login
