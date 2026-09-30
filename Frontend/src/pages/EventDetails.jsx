@@ -1,52 +1,72 @@
 import { useEffect, useState } from "react";
 
-const params = new URLSearchParams(window.location.search);
-const eventId = Number(params.get("id"));
+const params = new URLSearchParams(
+  window.location.search
+);
+
+const eventId = Number(
+  params.get("id")
+);
 
 function EventDetails() {
 
-  const [event, setEvent] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [event, setEvent] =
+    useState(null);
 
-  const [showForm, setShowForm] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] =
+    useState(true);
 
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
+  const [showForm, setShowForm] =
+    useState(false);
+
+  const [submitted, setSubmitted] =
+    useState(false);
+
+  const [submitting, setSubmitting] =
+    useState(false);
+
+  const [error, setError] =
+    useState("");
 
 
   // =========================
-  // GET LOGGED-IN USER
+  // CURRENT USER
   // =========================
 
   const user = JSON.parse(
-    localStorage.getItem("campulseUser")
+    localStorage.getItem(
+      "campulseUser"
+    )
   );
 
 
   // =========================
-  // REGISTRATION FORM
+  // FORM DATA
   // =========================
 
-  const [formData, setFormData] = useState({
-    name: user?.name || "",
-    email: user?.email || "",
-    collegeYear: user?.collegeYear || "",
-    phone: ""
-  });
+  const [formData, setFormData] =
+    useState({
+      name: user?.name || "",
+      email: user?.email || "",
+      collegeYear:
+        user?.collegeYear || "",
+      phone: ""
+    });
 
 
   // =========================
-  // FETCH EVENT
+  // LOAD EVENT
   // =========================
 
   useEffect(() => {
 
-    fetch("http://localhost:5000/api/events")
+    fetch("/api/events")
       .then((response) => {
 
         if (!response.ok) {
-          throw new Error("Failed to fetch event");
+          throw new Error(
+            "Failed to fetch event"
+          );
         }
 
         return response.json();
@@ -54,11 +74,16 @@ function EventDetails() {
       })
       .then((data) => {
 
-        const selectedEvent = data.find(
-          (item) => item.id === eventId
+        const selectedEvent =
+          data.find(
+            (item) =>
+              item.id === eventId
+          );
+
+        setEvent(
+          selectedEvent
         );
 
-        setEvent(selectedEvent);
         setLoading(false);
 
       })
@@ -77,23 +102,26 @@ function EventDetails() {
 
 
   // =========================
-  // CLOSE FORM WHEN EVENT IS FULL
+  // CHECK CAPACITY
   // =========================
 
   useEffect(() => {
 
     if (
       event &&
-      event.registered >= event.capacity
+      event.registered >=
+        event.capacity
     ) {
+
       setShowForm(false);
+
     }
 
   }, [event]);
 
 
   // =========================
-  // SUBMIT REGISTRATION
+  // REGISTER
   // =========================
 
   const handleSubmit = async (e) => {
@@ -101,10 +129,12 @@ function EventDetails() {
     e.preventDefault();
 
 
-    // FINAL FRONTEND CAPACITY CHECK
+    // Prevent registration
+    // when event is full
 
     if (
-      event.registered >= event.capacity
+      event.registered >=
+      event.capacity
     ) {
 
       setError(
@@ -123,46 +153,56 @@ function EventDetails() {
 
     try {
 
-      const response = await fetch(
-        "http://localhost:5000/api/registrations",
-        {
-          method: "POST",
+      const response =
+        await fetch(
+          "/api/registrations",
+          {
+            method: "POST",
 
-          headers: {
-            "Content-Type": "application/json"
-          },
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
 
-          body: JSON.stringify({
-            ...formData,
-            eventId: event.id
-          })
-        }
-      );
+            body: JSON.stringify({
+              ...formData,
+              eventId:
+                event.id
+            })
+          }
+        );
 
 
-      const data = await response.json();
+      const data =
+        await response.json();
 
 
       if (!response.ok) {
 
         throw new Error(
           data.message ||
-          "Registration failed"
+            "Registration failed"
         );
 
       }
 
 
-      // UPDATE LOCAL EVENT COUNT
+      // Update local
+      // registration count
 
-      setEvent((previousEvent) => ({
-        ...previousEvent,
-        registered:
-          previousEvent.registered + 1
-      }));
+      setEvent(
+        (previousEvent) => ({
+          ...previousEvent,
+
+          registered:
+            previousEvent.registered +
+            1
+        })
+      );
 
 
       setSubmitted(true);
+
       setShowForm(false);
 
 
@@ -172,7 +212,7 @@ function EventDetails() {
 
       setError(
         error.message ||
-        "Unable to register. Please try again."
+          "Unable to register. Please try again."
       );
 
     } finally {
@@ -192,7 +232,9 @@ function EventDetails() {
 
     return (
 
-      <main className="event-details-page">
+      <main
+        className="event-details-page"
+      >
 
         <p>
           Loading event...
@@ -213,7 +255,9 @@ function EventDetails() {
 
     return (
 
-      <main className="event-details-page">
+      <main
+        className="event-details-page"
+      >
 
         <h2>
           Event not found.
@@ -227,23 +271,27 @@ function EventDetails() {
 
 
   // =========================
-  // EVENT FULL
+  // EVENT STATUS
   // =========================
 
   const isFull =
-    event.registered >= event.capacity;
+    event.registered >=
+    event.capacity;
 
 
   return (
 
-    <main className="event-details-page">
+    <main
+      className="event-details-page"
+    >
 
 
       {/* =========================
           EVENT HERO
-      ========================= */}
+          ========================= */}
 
       <section className="event-hero">
+
 
         <div>
 
@@ -251,9 +299,11 @@ function EventDetails() {
             {event.category}
           </span>
 
+
           <h1>
             {event.name}
           </h1>
+
 
           <p>
             {event.description}
@@ -277,14 +327,16 @@ function EventDetails() {
 
         </div>
 
+
       </section>
 
 
       {/* =========================
-          EVENT INFORMATION
-      ========================= */}
+          EVENT META
+          ========================= */}
 
       <section className="event-meta">
+
 
         <div>
 
@@ -323,7 +375,8 @@ function EventDetails() {
           </span>
 
           <strong>
-            {event.registered}/{event.capacity}
+            {event.registered}/
+            {event.capacity}
           </strong>
 
           <p>
@@ -334,92 +387,106 @@ function EventDetails() {
 
         </div>
 
+
       </section>
 
 
       {/* =========================
           REGISTRATION CTA
-      ========================= */}
+          ========================= */}
 
-      {!showForm && !submitted && (
+      {!showForm &&
+        !submitted && (
 
-        <section className="event-registration">
-
-          <div>
-
-            <p className="section-label">
-              REGISTRATION
-            </p>
-
-            <h2>
-              {isFull
-                ? "This event is full."
-                : "Be part of it."}
-            </h2>
-
-            <p>
-              {isFull
-                ? "All available seats have been reserved."
-                : "Secure your spot before the event reaches its capacity."}
-            </p>
-
-          </div>
-
-
-          <button
-            className="primary-btn"
-            disabled={isFull}
-            onClick={() => {
-
-              // EVENT FULL
-
-              if (isFull) {
-                return;
-              }
-
-
-              // NOT LOGGED IN
-
-              if (!user) {
-                window.location.href = "/login";
-                return;
-              }
-
-
-              // ADMIN TRYING TO REGISTER
-
-              if (user.role !== "student") {
-
-                setError(
-                  "Only student accounts can register for events."
-                );
-
-                return;
-              }
-
-
-              // OPEN FORM
-
-              setError("");
-              setShowForm(true);
-
-            }}
+          <section
+            className="event-registration"
           >
 
-            {isFull
-              ? "Event Full"
-              : "Register Now →"}
+            <div>
 
-          </button>
+              <p className="section-label">
+                REGISTRATION
+              </p>
 
-        </section>
 
-      )}
+              <h2>
+                {isFull
+                  ? "This event is full."
+                  : "Be part of it."}
+              </h2>
+
+
+              <p>
+                {isFull
+                  ? "All available seats have been reserved."
+                  : "Secure your spot before the event reaches its capacity."}
+              </p>
+
+            </div>
+
+
+            <button
+              className="primary-btn"
+              disabled={isFull}
+              onClick={() => {
+
+                // Extra safety check
+
+                if (isFull) {
+                  return;
+                }
+
+
+                // User must login
+
+                if (!user) {
+
+                  window.location.href =
+                    "/login";
+
+                  return;
+                }
+
+
+                // Only students
+                // can register
+
+                if (
+                  user.role !==
+                  "student"
+                ) {
+
+                  setError(
+                    "Only student accounts can register for events."
+                  );
+
+                  return;
+                }
+
+
+                setError("");
+
+                setShowForm(
+                  true
+                );
+
+              }}
+            >
+
+              {isFull
+                ? "Event Full"
+                : "Register Now →"}
+
+            </button>
+
+          </section>
+
+        )}
 
 
       {/* =========================
-          ERROR OUTSIDE FORM
-      ========================= */}
+          CTA ERROR
+          ========================= */}
 
       {!showForm &&
         !submitted &&
@@ -434,15 +501,20 @@ function EventDetails() {
 
       {/* =========================
           REGISTRATION FORM
-      ========================= */}
+          ========================= */}
 
       {showForm &&
         !submitted &&
         !isFull && (
 
-          <section className="registration-section">
+          <section
+            className="registration-section"
+          >
 
-            <div className="registration-heading">
+
+            <div
+              className="registration-heading"
+            >
 
               <p className="section-label">
                 JOIN THE EVENT
@@ -457,11 +529,11 @@ function EventDetails() {
 
             <form
               className="registration-form"
-              onSubmit={handleSubmit}
+              onSubmit={
+                handleSubmit
+              }
             >
 
-
-              {/* NAME */}
 
               <label>
 
@@ -470,14 +542,14 @@ function EventDetails() {
                 <input
                   type="text"
                   placeholder="Enter your name"
-                  value={formData.name}
+                  value={
+                    formData.name
+                  }
                   readOnly
                 />
 
               </label>
 
-
-              {/* EMAIL */}
 
               <label>
 
@@ -486,14 +558,14 @@ function EventDetails() {
                 <input
                   type="email"
                   placeholder="you@example.com"
-                  value={formData.email}
+                  value={
+                    formData.email
+                  }
                   readOnly
                 />
 
               </label>
 
-
-              {/* COLLEGE / YEAR */}
 
               <label>
 
@@ -502,14 +574,14 @@ function EventDetails() {
                 <input
                   type="text"
                   placeholder="B.Tech 2nd Year"
-                  value={formData.collegeYear}
+                  value={
+                    formData.collegeYear
+                  }
                   readOnly
                 />
 
               </label>
 
-
-              {/* PHONE */}
 
               <label>
 
@@ -518,11 +590,14 @@ function EventDetails() {
                 <input
                   type="tel"
                   placeholder="9876543210"
-                  value={formData.phone}
+                  value={
+                    formData.phone
+                  }
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      phone: e.target.value
+                      phone:
+                        e.target.value
                     })
                   }
                   required
@@ -530,8 +605,6 @@ function EventDetails() {
 
               </label>
 
-
-              {/* ERROR */}
 
               {error && (
 
@@ -542,12 +615,12 @@ function EventDetails() {
               )}
 
 
-              {/* SUBMIT */}
-
               <button
                 type="submit"
                 className="primary-btn"
-                disabled={submitting}
+                disabled={
+                  submitting
+                }
               >
 
                 {submitting
@@ -556,7 +629,9 @@ function EventDetails() {
 
               </button>
 
+
             </form>
+
 
           </section>
 
@@ -565,38 +640,43 @@ function EventDetails() {
 
       {/* =========================
           SUCCESS
-      ========================= */}
+          ========================= */}
 
       {submitted && (
 
-        <section className="registration-success">
+        <section
+          className="registration-success"
+        >
+
 
           <div className="success-icon">
             ✓
           </div>
 
+
           <p className="section-label">
             REGISTRATION CONFIRMED
           </p>
+
 
           <h2>
             You're officially in.
           </h2>
 
+
           <p>
-
             Your spot for{" "}
-
             <strong>
               {event.name}
             </strong>{" "}
-
             has been reserved.
-
           </p>
 
 
-          <div className="registration-ticket">
+          <div
+            className="registration-ticket"
+          >
+
 
             <span>
               EVENT
@@ -612,7 +692,8 @@ function EventDetails() {
             </span>
 
             <strong>
-              {event.date} · {event.time}
+              {event.date} ·{" "}
+              {event.time}
             </strong>
 
 
@@ -624,11 +705,14 @@ function EventDetails() {
               {event.venue}
             </strong>
 
+
           </div>
+
 
         </section>
 
       )}
+
 
     </main>
 
