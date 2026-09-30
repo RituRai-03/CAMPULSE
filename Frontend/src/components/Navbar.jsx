@@ -1,7 +1,26 @@
+import { useEffect, useState } from "react";
+
 function Navbar() {
+
   const user = JSON.parse(
     localStorage.getItem("campulseUser")
   );
+
+  const [darkMode, setDarkMode] = useState(() => {
+    return localStorage.getItem("campulseTheme") === "dark";
+  });
+
+  useEffect(() => {
+    document.body.classList.toggle(
+      "dark-mode",
+      darkMode
+    );
+
+    localStorage.setItem(
+      "campulseTheme",
+      darkMode ? "dark" : "light"
+    );
+  }, [darkMode]);
 
   const handleLogout = () => {
     localStorage.removeItem("campulseUser");
@@ -32,11 +51,26 @@ function Navbar() {
         )}
 
         {user?.role === "student" && (
-  <a href="/my-registrations">
-    My Registrations
-  </a>
-)}
+          <a href="/my-registrations">
+            My Registrations
+          </a>
+        )}
 
+<label className="theme-switch">
+  <input
+    type="checkbox"
+    checked={darkMode}
+    onChange={() => {
+      setDarkMode((previous) => !previous);
+    }}
+  />
+
+  <span className="theme-slider">
+    <span className="theme-icon">
+      {darkMode ? "☾" : "☀"}
+    </span>
+  </span>
+</label>
         {!user ? (
           <a href="/login">
             Login
