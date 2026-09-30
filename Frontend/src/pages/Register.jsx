@@ -3,8 +3,10 @@ import { useState } from "react";
 function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [collegeYear, setCollegeYear] = useState("");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
@@ -27,8 +29,9 @@ function Register() {
           body: JSON.stringify({
             name,
             email,
-            password,
-            collegeYear
+            collegeYear,
+            phone,
+            password
           })
         }
       );
@@ -82,7 +85,6 @@ function Register() {
 
         </div>
 
-
         <div className="login-box">
 
           <p className="section-label">
@@ -92,7 +94,6 @@ function Register() {
           <h2>
             Create account.
           </h2>
-
 
           <form
             className="login-form"
@@ -111,9 +112,7 @@ function Register() {
                 }
                 required
               />
-
             </label>
-
 
             <label>
               Email
@@ -127,9 +126,7 @@ function Register() {
                 }
                 required
               />
-
             </label>
-
 
             <label>
               College / Year
@@ -143,9 +140,21 @@ function Register() {
                 }
                 required
               />
-
             </label>
 
+            <label>
+              Phone Number
+
+              <input
+                type="tel"
+                placeholder="9876543210"
+                value={phone}
+                onChange={(e) =>
+                  setPhone(e.target.value)
+                }
+                required
+              />
+            </label>
 
             <label>
               Password
@@ -160,9 +169,7 @@ function Register() {
                 minLength="6"
                 required
               />
-
             </label>
-
 
             {error && (
               <p className="login-error">
@@ -170,13 +177,11 @@ function Register() {
               </p>
             )}
 
-
             {success && (
               <p className="register-success">
                 {success}
               </p>
             )}
-
 
             <button
               type="submit"
@@ -189,7 +194,6 @@ function Register() {
             </button>
 
           </form>
-
 
           <p className="login-note">
             Already have an account?{" "}

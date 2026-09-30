@@ -86,5 +86,13 @@
     "collegeYear": "B.Tech 2nd year",
     "phone": "8765432341",
     "eventId": 2
+  },
+  {
+    "id": 1790752956086,
+    "name": "developer",
+    "email": "developer@campus.com",
+    "collegeYear": "",
+    "phone": "987654356",
+    "eventId": 4
   }
 ]

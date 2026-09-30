@@ -20,5 +20,14 @@
     "password": "developer",
     "collegeYear": "B.Tech 2nd year",
     "role": "student"
+  },
+  {
+    "id": 1790753829590,
+    "name": "artist",
+    "email": "artist@campus.com",
+    "password": "1234578",
+    "collegeYear": "B.Tech 2nd year",
+    "phone": "987654356",
+    "role": "student"
   }
 ]

@@ -7,7 +7,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+
+// ==============================
 // HOME
+// ==============================
 
 app.get("/", (req, res) => {
     res.json({
@@ -15,7 +18,10 @@ app.get("/", (req, res) => {
     });
 });
 
+
+// ==============================
 // GET ALL EVENTS
+// ==============================
 
 app.get("/api/events", (req, res) => {
     const events = JSON.parse(
@@ -25,7 +31,11 @@ app.get("/api/events", (req, res) => {
     res.json(events);
 });
 
+
+// ==============================
 // ADD EVENT
+// ==============================
+
 app.post("/api/events", (req, res) => {
     const events = JSON.parse(
         fs.readFileSync("./data/events.json", "utf-8")
@@ -57,7 +67,9 @@ app.post("/api/events", (req, res) => {
 });
 
 
+// ==============================
 // DELETE EVENT
+// ==============================
 
 app.delete("/api/events/:id", (req, res) => {
     const events = JSON.parse(
@@ -89,6 +101,7 @@ app.delete("/api/events/:id", (req, res) => {
         message: "Event deleted successfully"
     });
 });
+
 
 // ==============================
 // UPDATE EVENT
@@ -124,7 +137,10 @@ app.put("/api/events/:id", (req, res) => {
         capacity: Number(req.body.capacity)
     };
 
-    if (updatedEvent.capacity < existingEvent.registered) {
+    if (
+        updatedEvent.capacity <
+        existingEvent.registered
+    ) {
         return res.status(400).json({
             message:
                 "Capacity cannot be less than current registrations"
@@ -145,7 +161,9 @@ app.put("/api/events/:id", (req, res) => {
 });
 
 
-// REGISTER STUDENT
+// ==============================
+// EVENT REGISTRATION
+// ==============================
 
 app.post("/api/registrations", (req, res) => {
     const events = JSON.parse(
@@ -156,10 +174,17 @@ app.post("/api/registrations", (req, res) => {
         fs.readFileSync("./data/registrations.json", "utf-8")
     );
 
-    const { name, email, collegeYear, phone, eventId } = req.body;
+    const {
+        name,
+        email,
+        collegeYear,
+        phone,
+        eventId
+    } = req.body;
 
     const event = events.find(
-        (event) => event.id === Number(eventId)
+        (event) =>
+            event.id === Number(eventId)
     );
 
     // Check whether event exists
@@ -170,12 +195,14 @@ app.post("/api/registrations", (req, res) => {
     }
 
     // Check duplicate registration
-    const alreadyRegistered = registrations.some(
-        (registration) =>
-            registration.email.toLowerCase() ===
-                email.toLowerCase() &&
-            registration.eventId === Number(eventId)
-    );
+    const alreadyRegistered =
+        registrations.some(
+            (registration) =>
+                registration.email.toLowerCase() ===
+                    email.toLowerCase() &&
+                registration.eventId ===
+                    Number(eventId)
+        );
 
     if (alreadyRegistered) {
         return res.status(400).json({
@@ -185,7 +212,10 @@ app.post("/api/registrations", (req, res) => {
     }
 
     // Check event capacity
-    if (event.registered >= event.capacity) {
+    if (
+        event.registered >=
+        event.capacity
+    ) {
         return res.status(400).json({
             message: "This event is full"
         });
@@ -209,31 +239,41 @@ app.post("/api/registrations", (req, res) => {
     // Save registrations
     fs.writeFileSync(
         "./data/registrations.json",
-        JSON.stringify(registrations, null, 2)
+        JSON.stringify(
+            registrations,
+            null,
+            2
+        )
     );
 
     // Save updated event
     fs.writeFileSync(
         "./data/events.json",
-        JSON.stringify(events, null, 2)
+        JSON.stringify(
+            events,
+            null,
+            2
+        )
     );
 
     res.status(201).json({
-        message: "Registration successful",
+        message:
+            "Registration successful",
         registration
     });
 });
 
 
-
-
-
+// ==============================
 // GET ALL REGISTRATIONS
-
+// ==============================
 
 app.get("/api/registrations", (req, res) => {
     const registrations = JSON.parse(
-        fs.readFileSync("./data/registrations.json", "utf-8")
+        fs.readFileSync(
+            "./data/registrations.json",
+            "utf-8"
+        )
     );
 
     res.json(registrations);
@@ -241,53 +281,23 @@ app.get("/api/registrations", (req, res) => {
 
 
 // ==============================
-// LOGIN
+// STUDENT ACCOUNT REGISTRATION
 // ==============================
-
-app.post("/api/login", (req, res) => {
-    const users = JSON.parse(
-        fs.readFileSync("./data/users.json", "utf-8")
-    );
-
-    const { email, password } = req.body;
-
-    const user = users.find(
-        (user) =>
-            user.email.toLowerCase() === email.toLowerCase() &&
-            user.password === password
-    );
-
-    if (!user) {
-        return res.status(401).json({
-            message: "Invalid email or password"
-        });
-    }
-
-    res.json({
-        message: "Login successful",
-        user: {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            role: user.role
-        }
-    });
-});
-
-// =========================
-// STUDENT REGISTRATION
-// =========================
 
 app.post("/api/register", (req, res) => {
     const users = JSON.parse(
-        fs.readFileSync("./data/users.json", "utf-8")
+        fs.readFileSync(
+            "./data/users.json",
+            "utf-8"
+        )
     );
 
     const {
         name,
         email,
         password,
-        collegeYear
+        collegeYear,
+        phone
     } = req.body;
 
     // Check required fields
@@ -295,10 +305,12 @@ app.post("/api/register", (req, res) => {
         !name ||
         !email ||
         !password ||
-        !collegeYear
+        !collegeYear ||
+        !phone
     ) {
         return res.status(400).json({
-            message: "Please fill in all fields"
+            message:
+                "Please fill in all fields"
         });
     }
 
@@ -331,20 +343,28 @@ app.post("/api/register", (req, res) => {
         email,
         password,
         collegeYear,
+        phone,
         role: "student"
     };
 
     users.push(newUser);
 
+    // Save user
     fs.writeFileSync(
         "./data/users.json",
-        JSON.stringify(users, null, 2)
+        JSON.stringify(
+            users,
+            null,
+            2
+        )
     );
 
     res.status(201).json({
-        message: "Student account created successfully"
+        message:
+            "Student account created successfully"
     });
 });
+
 
 // ==============================
 // LOGIN
@@ -352,35 +372,52 @@ app.post("/api/register", (req, res) => {
 
 app.post("/api/login", (req, res) => {
     const users = JSON.parse(
-        fs.readFileSync("./data/users.json", "utf-8")
+        fs.readFileSync(
+            "./data/users.json",
+            "utf-8"
+        )
     );
 
-    const { email, password } = req.body;
+    const {
+        email,
+        password
+    } = req.body;
 
     const user = users.find(
         (user) =>
-            user.email.toLowerCase() === email.toLowerCase() &&
+            user.email.toLowerCase() ===
+                email.toLowerCase() &&
             user.password === password
     );
 
     if (!user) {
         return res.status(401).json({
-            message: "Invalid email or password"
+            message:
+                "Invalid email or password"
         });
     }
 
     res.json({
-        message: "Login successful",
+        message:
+            "Login successful",
+
         user: {
             id: user.id,
             name: user.name,
             email: user.email,
+            collegeYear:
+                user.collegeYear || "",
+            phone:
+                user.phone || "",
             role: user.role
         }
     });
 });
-// START SERVER
 
+
+// ==============================
+// START SERVER
+// ==============================
 
 app.listen(5000, () => {
     console.log(
