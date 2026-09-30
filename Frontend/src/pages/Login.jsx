@@ -1,79 +1,137 @@
 import { useState } from "react";
 
 function Login() {
-  const [role, setRole] = useState("student");
+  const [role, setRole] =
+    useState("student");
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] =
+    useState("");
 
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [password, setPassword] =
+    useState("");
+
+  const [error, setError] =
+    useState("");
+
+  const [loading, setLoading] =
+    useState(false);
+
+
+  // =========================
+  // LOGIN
+  // =========================
 
   const handleLogin = async (e) => {
+
     e.preventDefault();
 
     setLoading(true);
     setError("");
 
-    try {
-      const response = await fetch(
-        "http://localhost:5000/api/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            email,
-            password
-          })
-        }
-      );
 
-      const data = await response.json();
+    try {
+
+      const response =
+        await fetch(
+          "/api/login",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({
+              email,
+              password
+            })
+          }
+        );
+
+
+      const data =
+        await response.json();
+
 
       if (!response.ok) {
+
         throw new Error(
-          data.message || "Login failed"
+          data.message ||
+            "Login failed"
         );
+
       }
 
+
       // Check selected role
-      if (data.user.role !== role) {
+
+      if (
+        data.user.role !== role
+      ) {
+
         throw new Error(
           `This account is registered as ${data.user.role}.`
         );
+
       }
+
 
       // Save logged-in user
+
       localStorage.setItem(
         "campulseUser",
-        JSON.stringify(data.user)
+        JSON.stringify(
+          data.user
+        )
       );
 
+
       // Redirect based on role
-      if (data.user.role === "admin") {
-        window.location.href = "/admin";
+
+      if (
+        data.user.role ===
+        "admin"
+      ) {
+
+        window.location.href =
+          "/admin";
+
       } else {
-        window.location.href = "/";
+
+        window.location.href =
+          "/";
+
       }
 
+
     } catch (error) {
+
       console.error(error);
-      setError(error.message);
+
+      setError(
+        error.message
+      );
+
     } finally {
+
       setLoading(false);
+
     }
+
   };
 
+
   return (
+
     <main className="login-page">
 
       <section className="login-container">
 
+
         {/* =========================
             INTRO
-        ========================= */}
+            ========================= */}
 
         <div className="login-intro">
 
@@ -81,15 +139,18 @@ function Login() {
             CAMPULSE
           </p>
 
+
           <h1>
             Your campus,
             <br />
             in motion.
           </h1>
 
+
           <p>
-            Discover events, join experiences and stay
-            connected with what is happening on campus.
+            Discover events, join experiences
+            and stay connected with what is
+            happening on campus.
           </p>
 
         </div>
@@ -97,7 +158,7 @@ function Login() {
 
         {/* =========================
             LOGIN BOX
-        ========================= */}
+            ========================= */}
 
         <div className="login-box">
 
@@ -105,14 +166,18 @@ function Login() {
             ENTER CAMPULSE
           </p>
 
+
           <h2>
             Welcome back.
           </h2>
 
 
-          {/* ROLE SELECTOR */}
+          {/* =========================
+              ROLE SELECTOR
+              ========================= */}
 
           <div className="role-selector">
+
 
             <button
               type="button"
@@ -122,8 +187,13 @@ function Login() {
                   : "role-btn"
               }
               onClick={() => {
-                setRole("student");
+
+                setRole(
+                  "student"
+                );
+
                 setError("");
+
               }}
             >
               Student
@@ -138,24 +208,36 @@ function Login() {
                   : "role-btn"
               }
               onClick={() => {
-                setRole("admin");
+
+                setRole(
+                  "admin"
+                );
+
                 setError("");
+
               }}
             >
               Admin
             </button>
 
+
           </div>
 
 
-          {/* LOGIN FORM */}
+          {/* =========================
+              LOGIN FORM
+              ========================= */}
 
           <form
             className="login-form"
-            onSubmit={handleLogin}
+            onSubmit={
+              handleLogin
+            }
           >
 
+
             <label>
+
               Email
 
               <input
@@ -167,7 +249,9 @@ function Login() {
                 }
                 value={email}
                 onChange={(e) =>
-                  setEmail(e.target.value)
+                  setEmail(
+                    e.target.value
+                  )
                 }
                 required
               />
@@ -176,6 +260,7 @@ function Login() {
 
 
             <label>
+
               Password
 
               <input
@@ -183,7 +268,9 @@ function Login() {
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) =>
-                  setPassword(e.target.value)
+                  setPassword(
+                    e.target.value
+                  )
                 }
                 required
               />
@@ -192,9 +279,11 @@ function Login() {
 
 
             {error && (
+
               <p className="login-error">
                 {error}
               </p>
+
             )}
 
 
@@ -203,48 +292,64 @@ function Login() {
               className="primary-btn login-btn"
               disabled={loading}
             >
+
               {loading
                 ? "Signing in..."
                 : "Continue →"}
+
             </button>
+
 
           </form>
 
 
-          {/* DEMO NOTE */}
+          {/* =========================
+              DEMO NOTE
+              ========================= */}
 
           <p className="login-note">
-            Demo access is provided for the recruitment
-            prototype.
+            Demo access is provided for
+            the recruitment prototype.
           </p>
 
 
-          {/* CREATE ACCOUNT */}
+          {/* =========================
+              CREATE ACCOUNT
+              ========================= */}
 
           {role === "student" && (
-            <div className="create-account-link">
+
+            <div
+              className="create-account-link"
+            >
 
               <span>
                 New to CAMPULSE?
               </span>
 
+
               <button
                 type="button"
                 onClick={() => {
-                  window.location.href = "/register";
+                  window.location.href =
+                    "/register";
                 }}
               >
                 Create student account →
               </button>
 
+
             </div>
+
           )}
+
 
         </div>
 
       </section>
 
     </main>
+
   );
 }
 
